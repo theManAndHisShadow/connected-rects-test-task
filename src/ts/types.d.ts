@@ -4,13 +4,6 @@ type Style = {
     borderThickness: number;
 }
 
-type InteractiveCanvas = {
-    background: CanvasRenderingContext2D;
-    foreground: CanvasRenderingContext2D;
-    width: number;
-    height: number;
-}
-
 type Point = {
     x: number;
     y: number;
@@ -21,13 +14,19 @@ type Size = {
     height: number;
 };
 
-type Rect = {
+type GeometricPrimitive = {
     position: Point;
     size: Size;
     style: Style;
-};
+}
+
+type Rectangle = GeometricPrimitive;
 
 type ConnectionPoint = {
     point: Point;
     angle: number;
 };
+
+type ShapeEventStorage = {
+    [key: string]: Array<(data: any) => void>;
+}
