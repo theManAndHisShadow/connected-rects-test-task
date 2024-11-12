@@ -1,23 +1,16 @@
-// some project "settings"
-const width = 500;
-const height = 500;
+import { createCanvas } from "./core";
+
+// init project canvas object
+const canvas = createCanvas("#app-root", 500, 500);
+
+// make some actions below
 const fillColor = 'rgba(0, 0, 0, 0.2)';
 const welcomeText = "Hello world!";
 
-// create and tune canvas and context
-const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-
 // make some basic actions
-const context = canvas.getContext('2d');
-      context.fillStyle = fillColor;
-      context.fillRect(0, 0, width, height);
+canvas.foreground.fillStyle = fillColor;
+canvas.foreground.fillRect(0, 0, canvas.width, canvas.height);
 
-      context.fillStyle = 'white';
-      context.font = "25px monospace";
-      context.fillText(welcomeText, width / 2 - 100, height / 2);
-
-// mounting canvas to app root
-const appRoot = document.querySelector('#app-root');
-      appRoot.appendChild(canvas);
+canvas.foreground.fillStyle = 'white';
+canvas.foreground.font = "25px monospace";
+canvas.foreground.fillText(welcomeText, canvas.width / 2 - 100, canvas.height / 2);
