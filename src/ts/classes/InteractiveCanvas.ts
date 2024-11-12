@@ -11,6 +11,8 @@ class Layer {
     context: CanvasRenderingContext2D;
     children: RectangleShape[];
 
+    uniqueIDs = new Set();
+
     constructor(parent: InteractiveCanvas, className: string){
         this.parent = parent;
 
@@ -35,6 +37,22 @@ class Layer {
     }
 
     /**
+     * Возвращает уникалный ID
+     * @returns 
+     */
+    private getUniqueID():number {
+        let id;
+
+        do {
+            id = Math.floor(Math.random() * 10000) + 1;
+        } while (this.uniqueIDs.has(id));
+
+        this.uniqueIDs.add(id);
+
+        return id;
+    }
+
+    /**
      * Вспомогательный метод класса. Позволяет быстро залить весь слой нужным цветом.
      * @param color - цвет заливки.
      */
@@ -48,6 +66,8 @@ class Layer {
      * @param children - фигура
      */
     appendChild(children: RectangleShape){
+        children.id = this.getUniqueID();
+
         this.children.push(children);
     }
 
@@ -78,6 +98,7 @@ export default class InteractiveCanvas {
     height: number;
     background: Layer;
     foreground: Layer;
+    isMousePressed: boolean;
 
     constructor(cssSelector: string, width: number, height: number){
         this.width = width;
@@ -120,42 +141,79 @@ export default class InteractiveCanvas {
      * Пока что реализован с учётом прямоуголльников, а методы расчёта для разных фигур будут релаизованы в будущем.
      * @param event - событие мыши
      */
-    processIntersectionsWithMouse(event: MouseEvent): void {
-        // Получаем с помощью хелпера позицию мыши относительно холста
-        let mousePos = getMousePos(this.foreground.body, event);
+    processIntersectionsWithMouse(): void {
+        this.addEventListener('mousedown', event => {
+            this.isMousePressed = true;
+        });
 
-        // проходимся по всем массиву объектов с переднего планаю (1)
-        for(let child of this.foreground.children) {
-            // Если координаты мыши пересекают границы фигуры (2)
-            if(
-                mousePos.x >= child.position.x && mousePos.x <= child.position.x + child.size.width
-                && mousePos.y >= child.position.y && mousePos.y <= child.position.y + child.size.height
-            ) {
-                // то вызываем срабатывание сразу 2 событий (если хотя бы один из них установлен)
+        this.addEventListener('mouseup', event => {
+            this.isMousePressed = false;
+        });
 
-                // Срабатывание движения мыши должно каждый раз вызывать callback данного события
-                // Такое же поведение у дефолитного события mousemove на html узлахъ
-                child.dispatchEvent('mousemove', {target: child});
+        this.addEventListener('mousemove', event => {
+            if (event instanceof MouseEvent) {
+                // Получаем с помощью хелпера позицию мыши относительно холста
+                let mousePos = getMousePos(this.foreground.body, event);
+                let mouseDragStartPos = {x: 0, y: 0};
 
-                // А вот тут важно - срабатывание пересечения с фигурой должно вызываться только 1 раз!
-                // До тех пор, пока мышь не покинет фигуру и наоборот.
+                // проходимся по всем массиву объектов с переднего планаю (1)
+                for (let child of this.foreground.children) {
+                    const isIntersecting = mousePos.x >= child.position.x && mousePos.x <= child.position.x + child.size.width
+                                         && mousePos.y >= child.position.y && mousePos.y <= child.position.y + child.size.height;
+                    
+                    if(isIntersecting) {
+                        let eventData = {
+                            target: child,
+                            mousePosition: mousePos,
+                        }
 
-                // то есть:
-                // -> пересекли границы фигуры - получили вызов с mouseover, 
-                // -> двигаем мышь внутри - тишина (если не было события mousemove)
-                // -> покинули границы фигуры - получили вызов moveout
-                if(child.mouseover === false) {
-                    child.dispatchEvent('mouseover', {target: child});
-                    child.mouseover = true;
-                    child.mouseout = false;
-                }
-            } else {
-                if(child.mouseout === false) {
-                    child.dispatchEvent('mouseout', {target: child});
-                    child.mouseout = true;
-                    child.mouseover = false;
+                        // (1) - Регистрируем событие движения внутри контура фигуры
+                        child.dispatchEvent('mousemove', eventData);
+                        child.eventStates.mousemove = true;
+
+                        // (2) - Если фигура ещё не была пересечена мышью ранее, срабатывает событие mouseover
+                        if (!child.eventStates.mouseover) {
+                            child.dispatchEvent('mouseover', eventData);
+                            child.eventStates.mouseover = true;
+                            child.eventStates.mouseout = false;
+                        }
+
+                        // (3a) - Обработка перетаскивания (начало)
+                        if (this.isMousePressed) {
+                            child.dispatchEvent('drag', {
+                                eventData,
+                                offset: {
+                                    x: mousePos.x - mouseDragStartPos.x,
+                                    y: mousePos.y - mouseDragStartPos.y
+                                }
+                            });
+
+                            mouseDragStartPos = mousePos; // важно, для перетаскивания нужно каждый раз перезаписывать данное свойство
+                            child.eventStates.drag = true;
+                        }
+
+                        // (3b) - Обработка перетаскивания (конец процесса)
+                        // Если мышь отпущена, завершение перетаскивания
+                        if (!this.isMousePressed && child.eventStates.drag) {
+                            child.dispatchEvent('dragend', eventData);
+                            child.eventStates.drag = false;
+                        }
+
+                    } else {
+                        // Если мышь покинула фигуру, срабатывает событие mouseout
+                        // Сброс других свойств
+                        if (!child.eventStates.mouseout) {
+                            child.dispatchEvent('mouseout', { target: child });
+                            child.eventStates.mouseout = true;
+                            child.eventStates.mouseover = false;
+                        }
+
+                        // Обновляем состояние для движения мыши за пределами фигуры
+                        child.eventStates.mousemove = false;
+                    }
                 }
             }
-        }
+        });
+
     }
 }
