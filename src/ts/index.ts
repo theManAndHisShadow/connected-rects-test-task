@@ -1,4 +1,4 @@
-import { createCanvas, drawRect } from "./core";
+import { createCanvas, drawGrid, drawRect } from "./core";
 
 // init project canvas object
 const canvas = createCanvas("#app-root", 500, 500);
@@ -10,6 +10,12 @@ const welcomeText = "Hello world!";
 // make some basic actions
 canvas.foreground.fillStyle = fillColor;
 canvas.foreground.fillRect(0, 0, canvas.width, canvas.height);
+
+drawGrid(canvas.background, {
+    gridSize: 20,
+    gridLineColor: 'rgba(255, 255, 255, 0.025)',
+    gridLineThickness: 1,
+});
 
 // make some basic actions
 const rect1 = drawRect(canvas.foreground, {
