@@ -34,17 +34,6 @@ export function createCanvas(cssSelector: string, width: number, height: number)
     return result;
 }
 
-export function drawRect(context: CanvasRenderingContext2D, params: Rect): Rect {
-    context.fillStyle = params.style.fillColor;
-    context.strokeStyle = params.style.borderColor;
-    context.lineWidth = params.style.borderThickness;
-
-    context.fillRect(params.position.x, params.position.y, params.size.width, params.size.height);
-    if(params.style.borderThickness > 0) context.strokeRect(params.position.x, params.position.y, params.size.width, params.size.height);
-
-    return params;
-}
-
 export function fillLayer(context: CanvasRenderingContext2D, color: string) {
     context.fillStyle = color;
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
