@@ -1,3 +1,4 @@
+import { changeColorOpacity } from "../helpers";
 import SynteticEventTarget from "./SynteticEventTarget";
 
 /**
@@ -21,6 +22,19 @@ export default class PrimitiveShape extends SynteticEventTarget implements Geome
         this.mouseover = false;
     }
 
+    /**
+     * Метод, изменяющий прозрачность фигуры.
+     * @param opacity 
+     */
+    updateOpacity(opacity: number){
+        this.style.fillColor = changeColorOpacity(this.style.fillColor, opacity);
+        this.style.borderColor = changeColorOpacity(this.style.borderColor, opacity);
+    }
+
+    /**
+     * Прототипный метод отрисовки.
+     * @param canvas 
+     */
     renderAt(canvas: CanvasRenderingContext2D){
         // prototype method
     }
