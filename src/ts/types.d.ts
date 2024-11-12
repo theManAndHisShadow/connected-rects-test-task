@@ -26,3 +26,7 @@ type ConnectionPoint = {
     point: Point;
     angle: number;
 };
+
+type ShapeEventStorage = {
+    [key: string]: Array<(data: any) => void>;
+}
