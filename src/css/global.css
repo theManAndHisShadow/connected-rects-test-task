@@ -13,3 +13,13 @@ body {
     align-items: center;     
     height: 100vh;   
 }
+
+.app-canvas__container {
+    position: relative;
+}
+
+.app-canvas__container canvas {
+    position: absolute; 
+    top: 0;
+    left: 0;
+}
