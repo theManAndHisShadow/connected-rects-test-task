@@ -1,5 +1,4 @@
 type Style = {
-    centerColor: string;
     fillColor: string;
     borderColor: string;
     borderThickness: number;
@@ -20,12 +19,12 @@ type Point = {
 type Size = {
     width: number;
     height: number;
-    style: Style;
 };
 
 type Rect = {
     position: Point;
     size: Size;
+    style: Style;
 };
 
 type ConnectionPoint = {
