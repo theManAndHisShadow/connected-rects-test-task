@@ -1,4 +1,4 @@
-import ConnectionPort from "./ConnectingPorts";
+import ConnectionPort from "./ConnectingPort";
 import PrimitiveShape from "./Primitive";
 
 interface PortsMap {
@@ -28,6 +28,8 @@ export default class RectangleShape extends PrimitiveShape implements Rectangle 
         let dx = this.position.x - newX;
         let dy = this.position.y - newY;
 
+
+        // 
         Object.values(this.ports).forEach(sidePoint => {
             sidePoint.cx -= dx;
             sidePoint.cy -= dy;
