@@ -1,15 +1,17 @@
-export default class ConnectionSide {
+export default class ConnectionPort {
     cx: number;
     cy: number;
     r: number;
     parent: Rectangle;
     letter: string;
     isBusy: boolean;
+    endPoint: null | ConnectionPort;
 
     constructor(params: {letter: string, cx: number, cy: number, r: number, parent: Rectangle}){
         Object.assign(this, params);
 
         this.isBusy = false;
+        this.endPoint = null;
     }
 
     renderAt(context: CanvasRenderingContext2D): void {

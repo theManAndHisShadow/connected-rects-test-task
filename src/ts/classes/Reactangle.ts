@@ -1,30 +1,34 @@
-import ConnectionSide from "./ConnectingSide";
+import ConnectionPort from "./ConnectingPorts";
 import PrimitiveShape from "./Primitive";
+
+interface PortsMap {
+    [key: string]: ConnectionPort,
+}
 
 export default class RectangleShape extends PrimitiveShape implements Rectangle {
     position: Point;
     size: Size;
     style: Style;
-    connectionSides: ConnectionSide[];
+    ports: PortsMap;
 
     constructor(params: Rectangle){
         super(params);
 
         Object.assign(this, params);
 
-        this.connectionSides = [
-            new ConnectionSide({ letter: 'A', parent: this, r: 3, cx: this.position.x,  cy: this.position.y + (this.size.height / 2) }),
-            new ConnectionSide({ letter: 'B', parent: this, r: 3, cx: this.position.x + (this.size.width / 2),  cy: this.position.y}),
-            new ConnectionSide({ letter: 'C', parent: this, r: 3, cx: this.position.x + this.size.width,  cy: this.position.y + (this.size.height / 2) }),
-            new ConnectionSide({ letter: 'D', parent: this, r: 3, cx: this.position.x + (this.size.width / 2),  cy: this.position.y + this.size.height }),
-        ];
+        this.ports = {
+            A: new ConnectionPort({ letter: 'A', parent: this, r: 3, cx: this.position.x,  cy: this.position.y + (this.size.height / 2) }),
+            B: new ConnectionPort({ letter: 'B', parent: this, r: 3, cx: this.position.x + (this.size.width / 2),  cy: this.position.y}),
+            C: new ConnectionPort({ letter: 'C', parent: this, r: 3, cx: this.position.x + this.size.width,  cy: this.position.y + (this.size.height / 2) }),
+            D: new ConnectionPort({ letter: 'D', parent: this, r: 3, cx: this.position.x + (this.size.width / 2),  cy: this.position.y + this.size.height }),
+        };
     }
 
     moveTo(newX: number, newY: number){
         let dx = this.position.x - newX;
         let dy = this.position.y - newY;
 
-        this.connectionSides.forEach(sidePoint => {
+        Object.values(this.ports).forEach(sidePoint => {
             sidePoint.cx -= dx;
             sidePoint.cy -= dy;
         });
@@ -41,7 +45,7 @@ export default class RectangleShape extends PrimitiveShape implements Rectangle 
         context.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
         if(this.style.borderThickness > 0) context.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
 
-        this.connectionSides.forEach(sidePoint => {
+        Object.values(this.ports).forEach(sidePoint => {
             sidePoint.renderAt(context);
         })
     }
