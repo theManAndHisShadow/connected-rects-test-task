@@ -1,0 +1,1 @@
+(()=>{var e=document.createElement("canvas");e.width=500,e.height=500;var t=e.getContext("2d");t.fillStyle="rgba(0, 0, 0, 0.2)",t.fillRect(0,0,500,500),t.fillStyle="white",t.font="25px monospace",t.fillText("Hello world!",150,250),document.querySelector("#app-root").appendChild(e)})();
