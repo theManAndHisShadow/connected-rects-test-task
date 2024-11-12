@@ -1,4 +1,4 @@
-import { createCanvas } from "./core";
+import { createCanvas, drawRect } from "./core";
 
 // init project canvas object
 const canvas = createCanvas("#app-root", 500, 500);
@@ -11,6 +11,37 @@ const welcomeText = "Hello world!";
 canvas.foreground.fillStyle = fillColor;
 canvas.foreground.fillRect(0, 0, canvas.width, canvas.height);
 
-canvas.foreground.fillStyle = 'white';
-canvas.foreground.font = "25px monospace";
-canvas.foreground.fillText(welcomeText, canvas.width / 2 - 100, canvas.height / 2);
+// make some basic actions
+const rect1 = drawRect(canvas.foreground, {
+    size: {
+        width: 100, height: 80,
+    },
+
+    position: {
+        x: 30, y: 10,
+    },
+
+    style: {
+        fillColor: 'rgba(255, 0, 0, 0.1)',
+        borderColor: 'rgba(255, 0, 0, 0.3)',
+        borderThickness: 2,
+    },
+});
+
+const rect2 = drawRect(canvas.foreground, {
+    size: {
+        width: 100, height: 80,
+    },
+
+    position: {
+        x: 230, y: 110,
+    },
+
+    style: {
+        fillColor: 'rgba(0, 40, 255, 0.1)',
+        borderColor: 'rgba(0, 0, 255, 0.3)',
+        borderThickness: 2,
+    },
+});
+
+console.log(canvas, rect1, rect2);
