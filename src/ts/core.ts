@@ -14,8 +14,8 @@ export function createCanvas(cssSelector: string, width: number, height: number)
     // creating and tuning canvas container element
     const container = document.createElement('div');
           container.classList.add('app-canvas__container');
-          container.appendChild(backgroundCanvas);
           container.appendChild(foregroundCanvas);
+          container.appendChild(backgroundCanvas);
           container.style.width = `${width}px`;        // set height for flexible centrizing
           container.style.height = `${height}px`;      // set height for flexible centrizing
     
@@ -26,7 +26,7 @@ export function createCanvas(cssSelector: string, width: number, height: number)
     // build result object
     const result: InteractiveCanvas = {
         background: backgroundCanvas.getContext('2d'),
-        foreground: backgroundCanvas.getContext('2d'),
+        foreground: foregroundCanvas.getContext('2d'),
         width: width,
         height: height,
     }
