@@ -14,8 +14,8 @@ export function createCanvas(cssSelector: string, width: number, height: number)
     // creating and tuning canvas container element
     const container = document.createElement('div');
           container.classList.add('app-canvas__container');
-          container.appendChild(foregroundCanvas);
           container.appendChild(backgroundCanvas);
+          container.appendChild(foregroundCanvas);
           container.style.width = `${width}px`;        // set height for flexible centrizing
           container.style.height = `${height}px`;      // set height for flexible centrizing
     
@@ -66,4 +66,23 @@ export function drawGrid(context: CanvasRenderingContext2D, params: {gridSize: n
     }
 
     context.stroke();
+}
+
+export function getCoor(name: string): string {
+    interface colorStorage {
+        [key: string]: string,
+    }
+
+    const colors: colorStorage = {
+        darkRed:     'rgba(38, 12, 12, 1)',
+        brightRed:   'rgba(114, 6, 6, 1)',
+
+        darkBlue:    'rgba(12, 16, 38, 1)',
+        brightBlue:  'rgba(9, 12, 104, 1)',
+
+        darkGreen:   'rgba(12, 38, 12, 1)',
+        brightGreen: 'rgba(6, 114, 6, 1)',
+    }
+
+    return colors[name];
 }
