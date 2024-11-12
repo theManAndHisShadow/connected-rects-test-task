@@ -45,6 +45,11 @@ export function drawRect(context: CanvasRenderingContext2D, params: Rect): Rect 
     return params;
 }
 
+export function fillLayer(context: CanvasRenderingContext2D, color: string) {
+    context.fillStyle = color;
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+}
+
 export function drawGrid(context: CanvasRenderingContext2D, params: {gridSize: number, gridLineThickness: number, gridLineColor: string}): void{
     const { width, height } = context.canvas;
 
@@ -74,6 +79,7 @@ export function getCoor(name: string): string {
     }
 
     const colors: colorStorage = {
+        carbon:      'rgba(14, 14, 14, 1)',
         darkRed:     'rgba(38, 12, 12, 1)',
         brightRed:   'rgba(114, 6, 6, 1)',
 
