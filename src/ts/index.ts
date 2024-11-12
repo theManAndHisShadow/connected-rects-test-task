@@ -1,15 +1,10 @@
-import { createCanvas, drawGrid, drawRect } from "./core";
+import { createCanvas, drawGrid, drawRect, fillLayer, getCoor as getColor } from "./core";
 
 // init project canvas object
 const canvas = createCanvas("#app-root", 500, 500);
 
-// make some actions below
-const fillColor = 'rgba(0, 0, 0, 0.2)';
-const welcomeText = "Hello world!";
-
-// make some basic actions
-canvas.foreground.fillStyle = fillColor;
-canvas.foreground.fillRect(0, 0, canvas.width, canvas.height);
+// rendering backrgound layer once for better performance
+fillLayer(canvas.background, getColor('carbon'));
 
 drawGrid(canvas.background, {
     gridSize: 20,
@@ -17,37 +12,61 @@ drawGrid(canvas.background, {
     gridLineThickness: 1,
 });
 
-// make some basic actions
-const rect1 = drawRect(canvas.foreground, {
-    size: {
-        width: 100, height: 80,
-    },
+// rendering foreground layer each frame
+const loop = () => {
+    requestAnimationFrame(loop);
 
-    position: {
-        x: 30, y: 10,
-    },
+    // make some basic actions
+    const rect1 = drawRect(canvas.foreground, {
+        size: {
+            width: 100, height: 80,
+        },
 
-    style: {
-        fillColor: 'rgba(255, 0, 0, 0.1)',
-        borderColor: 'rgba(255, 0, 0, 0.3)',
-        borderThickness: 2,
-    },
-});
+        position: {
+            x: 30, y: 10,
+        },
 
-const rect2 = drawRect(canvas.foreground, {
-    size: {
-        width: 100, height: 80,
-    },
+        style: {
+            fillColor: getColor('darkRed'),
+            borderColor: getColor('brightRed'),
+            borderThickness: 2,
+        },
+    });
 
-    position: {
-        x: 230, y: 110,
-    },
+    const rect2 = drawRect(canvas.foreground, {
+        size: {
+            width: 100, height: 80,
+        },
 
-    style: {
-        fillColor: 'rgba(0, 40, 255, 0.1)',
-        borderColor: 'rgba(0, 0, 255, 0.3)',
-        borderThickness: 2,
-    },
-});
+        position: {
+            x: 230, y: 110,
+        },
 
-console.log(canvas, rect1, rect2);
+        style: {
+            fillColor: getColor('darkBlue'),
+            borderColor: getColor('brightBlue'),
+            borderThickness: 2,
+        },
+    });
+
+
+    const rect3 = drawRect(canvas.foreground, {
+        size: {
+            width: 100, height: 80,
+        },
+
+        position: {
+            x: 150, y: 210,
+        },
+
+        style: {
+            fillColor: getColor('darkGreen'),
+            borderColor: getColor('brightGreen'),
+            borderThickness: 2,
+        },
+    });
+}
+
+loop();
+
+console.log(canvas);
