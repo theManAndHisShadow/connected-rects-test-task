@@ -1,3 +1,9 @@
+
+/**
+ * Вспомогательная функция, которая рисует сетку с заданными параметрами.
+ * @param context - контекст, где сетку необходимо отрисовать
+ * @param params - размер ячейки сетки, толщина линии сетки, цвет линии сетки
+ */
 export function drawGrid(context: CanvasRenderingContext2D, params: {gridSize: number, gridLineThickness: number, gridLineColor: string}): void{
     const { width, height } = context.canvas;
 
@@ -21,7 +27,15 @@ export function drawGrid(context: CanvasRenderingContext2D, params: {gridSize: n
     context.stroke();
 }
 
+
+
+/**
+ * Вспомогательная функция, которая позволяет получить rgba-код цвета по названию.
+ * @param name - название цвета
+ * @returns 
+ */
 export function getColor(name: string): string {
+    // Создаём локальный интерфейс для хранения пар "ключ (название цвета): код цвета (rgba)"
     interface colorStorage {
         [key: string]: string,
     }
@@ -39,4 +53,21 @@ export function getColor(name: string): string {
     }
 
     return colors[name];
+}
+
+
+
+/**
+ * Вспомогательная функция, которая возвращает объект с позицией курсора мыши относительно холста.
+ * @param canvas - холст, относительно которого движдется мышь
+ * @param event - объект события, в котором хранится инфо о позиции курсора
+ * @returns 
+ */
+export function getMousePos(canvas: HTMLCanvasElement, event: MouseEvent): {x: number, y: number} {
+    let rect = canvas.getBoundingClientRect();
+
+    return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+    };
 }
