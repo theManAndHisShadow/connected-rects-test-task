@@ -21,11 +21,13 @@ type Size = {
     height: number;
 };
 
-type Rect = {
+type GeometricPrimitive = {
     position: Point;
     size: Size;
     style: Style;
-};
+}
+
+type Rectangle = GeometricPrimitive;
 
 type ConnectionPoint = {
     point: Point;
