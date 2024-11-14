@@ -1,5 +1,5 @@
 import { changeColorOpacity } from "../helpers";
-import RectangleShape from "./Reactangle";
+import RectangleShape from "./Rectangle";
 import SynteticEventTarget from "./SynteticEventTarget";
 
 interface MouseEventStorage {
