@@ -17,10 +17,10 @@ export default class RectangleShape extends PrimitiveShape implements Rectangle 
         Object.assign(this, params);
 
         this.ports = {
-            A: new ConnectionPort({ letter: 'A', parent: this, r: 3, cx: this.position.x,  cy: this.position.y + (this.size.height / 2) }),
-            B: new ConnectionPort({ letter: 'B', parent: this, r: 3, cx: this.position.x + (this.size.width / 2),  cy: this.position.y}),
-            C: new ConnectionPort({ letter: 'C', parent: this, r: 3, cx: this.position.x + this.size.width,  cy: this.position.y + (this.size.height / 2) }),
-            D: new ConnectionPort({ letter: 'D', parent: this, r: 3, cx: this.position.x + (this.size.width / 2),  cy: this.position.y + this.size.height }),
+            A: new ConnectionPort({ letter: 'A', parent: this, angle: 180, r: 3, x: this.position.x,  y: this.position.y + (this.size.height / 2) }),
+            B: new ConnectionPort({ letter: 'B', parent: this, angle: 90, r: 3, x: this.position.x + (this.size.width / 2),  y: this.position.y}),
+            C: new ConnectionPort({ letter: 'C', parent: this, angle: 0, r: 3, x: this.position.x + this.size.width,  y: this.position.y + (this.size.height / 2) }),
+            D: new ConnectionPort({ letter: 'D', parent: this, angle: 270, r: 3, x: this.position.x + (this.size.width / 2),  y: this.position.y + this.size.height }),
         };
     }
 
@@ -30,10 +30,16 @@ export default class RectangleShape extends PrimitiveShape implements Rectangle 
 
 
         // 
-        Object.values(this.ports).forEach(sidePoint => {
-            sidePoint.cx -= dx;
-            sidePoint.cy -= dy;
+        Object.values(this.ports).forEach(sidePort => {
+            sidePort.connectionPoint.point.x -= dx;
+            sidePort.connectionPoint.point.y -= dy;
+
+           if(sidePort.connection !== null) {
+                // Вызываем обновление соединения при перемещении родительского прямоугольника
+                sidePort.connection.updatePath();
+           }
         });
+
 
         this.position.x = newX;
         this.position.y = newY;
