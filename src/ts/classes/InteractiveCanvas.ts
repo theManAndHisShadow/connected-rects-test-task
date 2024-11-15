@@ -1,5 +1,5 @@
 import { getMousePos } from "../helpers";
-import RectangleShape from "./Reactangle";
+import RectangleShape from "./Rectangle";
 
 /**
  * Локально определнный вспомогательный класс слоя холста.

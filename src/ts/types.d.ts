@@ -1,5 +1,6 @@
 type Style = {
     fillColor: string;
+    maring?: number | null;
     borderColor: string;
     borderThickness: number;
 }
@@ -15,6 +16,7 @@ type Size = {
 };
 
 type GeometricPrimitive = {
+    id?: number | null;
     position: Point;
     size: Size;
     style: Style;
