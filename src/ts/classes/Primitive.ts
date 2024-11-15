@@ -2,15 +2,6 @@ import { changeColorOpacity } from "../helpers";
 import RectangleShape from "./Rectangle";
 import SynteticEventTarget from "./SynteticEventTarget";
 
-interface MouseEventStorage {
-    mouseout: boolean;
-    mouseover: boolean;
-    mousedown: boolean;
-    mouseup: boolean;
-    mousemove: boolean;
-    drag: boolean;
-}
-
 /**
  * Базовый класс геометрического примитива. 
  * Даёт начало для всех фигур в проекте.
@@ -19,7 +10,6 @@ export default class PrimitiveShape extends SynteticEventTarget implements Geome
     position: Point;
     size: Size;
     style: Style;
-    eventStates: MouseEventStorage;
     id: number | null;
 
     constructor(params: GeometricPrimitive){
@@ -33,16 +23,6 @@ export default class PrimitiveShape extends SynteticEventTarget implements Geome
 
         // пока объект не добавлен в конкретный слой - id пустое значение
         this.id = null;
-
-        // храним значения по событиям мыши для быстрого доступа к состоянию события
-        this.eventStates = {
-            mouseout: false,
-            mouseover: false,
-            mouseup: true,
-            mousedown: false,
-            mousemove: false,
-            drag: false,
-        }
 
         // Тут мы сохраняем 2 взаимно исключающих события, котоыре позволяют событиям mouseover и mouseout срабатывать корректно
         
