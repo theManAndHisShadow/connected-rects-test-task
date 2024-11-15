@@ -1,13 +1,36 @@
+// Так как события мыши - сложная штука
+// то храним различные состояния в отдельном хранилище
+interface MouseEventStorage {
+    mouseout: boolean;
+    mouseover: boolean;
+    mousedown: boolean;
+    mouseup: boolean;
+    mousemove: boolean;
+    drag: boolean;
+}
+
+
 /**
  * Класс синтетических событий. 
  * Добавляет некотору реактивность, позволяя избегать callback-hell
  */
 export default class SynteticEventTarget {
     events: ShapeEventStorage;
+    eventStates: MouseEventStorage;
 
     constructor() {
         // тут мы храним пары "название события": "массив с функциями обратного вызова"
         this.events = {};
+
+        // храним значения по событиям мыши для быстрого доступа к состоянию события
+        this.eventStates = {
+            mouseout: false,
+            mouseover: false,
+            mouseup: true,
+            mousedown: false,
+            mousemove: false,
+            drag: false,
+        }
     }
 
     /**
