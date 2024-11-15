@@ -6,6 +6,8 @@ interface MouseEventStorage {
     mousedown: boolean;
     mouseup: boolean;
     mousemove: boolean;
+    hoveron: boolean;
+    hoveroff: boolean;
     drag: boolean;
 }
 
@@ -29,6 +31,8 @@ export default class SynteticEventTarget {
             mouseup: true,
             mousedown: false,
             mousemove: false,
+            hoveron: false,
+            hoveroff: false,
             drag: false,
         }
     }
