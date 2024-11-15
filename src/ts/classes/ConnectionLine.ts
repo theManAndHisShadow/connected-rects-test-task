@@ -175,6 +175,7 @@ export default class ConnectionLine {
     renderSegmentsAt(context: CanvasRenderingContext2D) {
         let segmentNotStarted = true;
 
+        context.beginPath();
         context.lineWidth = 1;
         context.strokeStyle = 'rgba(100, 100, 100, 1)';
 
@@ -190,6 +191,8 @@ export default class ConnectionLine {
 
             context.stroke();
         }
+
+        context.closePath();
     }
 
 
