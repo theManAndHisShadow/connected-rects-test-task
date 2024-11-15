@@ -25,6 +25,10 @@ export default class PrimitiveShape extends SynteticEventTarget implements Geome
     constructor(params: GeometricPrimitive){
         super();
 
+        // определяем те свойства, которые могут не указываться явнр
+        params.id = params.id ?? null; // null потому что без добавления в слой на InteractiveCanvas id не генерируется и явняется пустым значением
+        params.style.maring = params.style.maring ?? 10; 
+
         Object.assign(this, params);
 
         // пока объект не добавлен в конкретный слой - id пустое значение
