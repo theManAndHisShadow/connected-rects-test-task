@@ -1,6 +1,7 @@
 import ConnectionLine from "./ConnectionLine";
+import SynteticEventTarget from "./SynteticEventTarget";
 
-export default class ConnectionPort {
+export default class ConnectionPort extends SynteticEventTarget{
     connectionPoint: ConnectionPoint;
     r: number;
     parent: Rectangle;
@@ -10,6 +11,8 @@ export default class ConnectionPort {
     connection: ConnectionLine | null; 
 
     constructor(params: { letter: string, x: number, y: number, r: number, parent: Rectangle, angle: number}) {
+        super();
+        
         this.connectionPoint = {
             point: {x: params.x, y: params.y},
             angle: params.angle,
