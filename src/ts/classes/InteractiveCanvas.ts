@@ -236,16 +236,31 @@ export default class InteractiveCanvas {
                     
                     for(let port of ports) {
                         let center =  port.connectionPoint.point;
-                        if(isPointInsideCircle(mousePos.x, mousePos.y, center.x, center.y, port.r)) {
+
+                        // взаимодействие с портом косвенно (движение в его ховер области)
+                        if(isPointInsideCircle(mousePos.x, mousePos.y, center.x, center.y, port.hoverR)) {
+                            if (!port.eventStates.hoveron) {
+                                port.dispatchEvent('hoveron', {target: port});
+                                port.eventStates.hoveron = true;
+                                port.eventStates.hoveroff = false;
+                            }
+
+                        } else {
+                            if(!port.eventStates.hoveroff) {
+                                port.dispatchEvent('hoveroff', {target: port});
+                                port.eventStates.hoveroff = true;
+                                port.eventStates.hoveron = false;
+                            }
+                        }
+
+                        // взаимодействие непосредственно с портом
+                        if(isPointInsideCircle(mousePos.x, mousePos.y, center.x, center.y, port.r * 2)) {
                             if (!port.eventStates.mouseover) {
                                 port.dispatchEvent('mouseover', {target: port});
                                 port.eventStates.mouseover = true;
                                 port.eventStates.mouseout = false;
                             }
 
-                            if(this.isMousePressed) {
-                                port.dispatchEvent('click', {target: port});
-                            }
                         } else {
                             if(!port.eventStates.mouseout) {
                                 port.dispatchEvent('mouseout', {target: port});
