@@ -1,4 +1,4 @@
-import { getMousePos } from "../helpers";
+import { getMousePos, isPointInsideCircle } from "../helpers";
 import RectangleShape from "./Rectangle";
 
 /**
@@ -144,6 +144,23 @@ export default class InteractiveCanvas {
     processIntersectionsWithMouse(): void {
         this.addEventListener('mousedown', event => {
             this.isMousePressed = true;
+
+            if(event instanceof MouseEvent) {
+                let mousePos = getMousePos(this.foreground.body, event);
+
+
+                for(let child of this.foreground.children) {
+                    let ports = Object.values(child.ports);
+                    
+                    // события портов
+                    for(let port of ports) {
+                        let center =  port.connectionPoint.point;
+                        if(isPointInsideCircle(mousePos.x, mousePos.y, center.x, center.y, port.r)) {
+                            port.dispatchEvent('click', {target: port});
+                        }
+                    }
+                }
+            }
         });
 
         this.addEventListener('mouseup', event => {
@@ -210,6 +227,32 @@ export default class InteractiveCanvas {
 
                         // Обновляем состояние для движения мыши за пределами фигуры
                         child.eventStates.mousemove = false;
+                    }
+                }
+
+                // отдельно события портов
+                for(let child of this.foreground.children) {
+                    let ports = Object.values(child.ports);
+                    
+                    for(let port of ports) {
+                        let center =  port.connectionPoint.point;
+                        if(isPointInsideCircle(mousePos.x, mousePos.y, center.x, center.y, port.r)) {
+                            if (!port.eventStates.mouseover) {
+                                port.dispatchEvent('mouseover', {target: port});
+                                port.eventStates.mouseover = true;
+                                port.eventStates.mouseout = false;
+                            }
+
+                            if(this.isMousePressed) {
+                                port.dispatchEvent('click', {target: port});
+                            }
+                        } else {
+                            if(!port.eventStates.mouseout) {
+                                port.dispatchEvent('mouseout', {target: port});
+                                port.eventStates.mouseout = true;
+                                port.eventStates.mouseover = false;
+                            }
+                        }
                     }
                 }
             }
