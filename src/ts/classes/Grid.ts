@@ -1,7 +1,4 @@
-import { getEuclidDistance } from "../helpers";
-import ConnectionPort from "./ConnectingPort";
 import ConnectionLine from "./ConnectionLine";
-import Layer from "./Layer";
 
 export default class Grid {
     parent: ConnectionLine;
