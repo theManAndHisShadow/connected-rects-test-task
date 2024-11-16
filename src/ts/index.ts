@@ -96,9 +96,6 @@ canvas.foreground.children.forEach(shape => {
             );
         }
 
-        // обновляем точки сетки после движения элементов слоя
-        canvas.foreground.grid.update();
-
         canvas.foreground.body.style.cursor = "grab";
     });
 

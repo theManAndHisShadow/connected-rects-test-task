@@ -1,24 +1,25 @@
+import ConnectionLine from "./ConnectionLine";
 import Layer from "./Layer";
 
 export default class Grid {
+    parent: ConnectionLine;
     points: Point[];
-    parent: Layer;
 
-    constructor(parent: Layer) {
+    constructor(parent: ConnectionLine) {
         this.parent = parent;
         this.points = this.generate();
     }
 
     private generate() {
         const points = [];
-        const allLayerItems = this.parent.children;
+        const endPoints = this.parent.endPoints;
 
-        for (let item of allLayerItems) {
-            const { x, y } = item.position;
-            const { width, height } = item.size;
+        for (let endPoint of endPoints) {
+            const { x, y } = endPoint.parent.position;
+            const { width, height } = endPoint.parent.size;
             const halfWidth = width / 2;
             const halfHeight = height / 2;
-            const offset = item.style.margin;
+            const offset = endPoint.parent.style.margin;
 
             const centerPoint =       { x: x + halfWidth, y: y + halfHeight };
             const topCenterPoint =    { x: x + halfWidth, y: y - offset };

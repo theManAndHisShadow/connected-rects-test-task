@@ -1,6 +1,7 @@
 import { isPointInsideRectangle, getEuclidDistance, getManhattanDistance } from "../helpers";
 import PriorityHeap from "./PriorityHeap";
 import ConnectionPort from "./ConnectingPort";
+import Grid from "./Grid";
 
 /**
  * Класс линии соединения.
@@ -9,11 +10,13 @@ import ConnectionPort from "./ConnectingPort";
  */
 export default class ConnectionLine {
     points: Point[];
+    grid: Grid;
     endPoints: ConnectionPort[];
 
     constructor(startPort: ConnectionPort, endPort: ConnectionPort) {
         this.endPoints = [startPort, endPort];
         this.points = this.buildPathTrace();
+        this.grid = new Grid(this);
     }
 
 
@@ -170,6 +173,7 @@ export default class ConnectionLine {
 
     updatePath() {
         this.points = this.buildPathTrace();
+        this.grid.update();
     }
 
     renderSegmentsAt(context: CanvasRenderingContext2D) {
@@ -200,5 +204,6 @@ export default class ConnectionLine {
     renderAt(context: CanvasRenderingContext2D) {
         // отрисовываем сначала сегменты пути
         this.renderSegmentsAt(context);
+        this.grid.renderAt(context);
     }
 }

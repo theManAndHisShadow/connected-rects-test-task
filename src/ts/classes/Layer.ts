@@ -10,7 +10,6 @@ export default class Layer {
     body: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     children: RectangleShape[];
-    grid: Grid;
 
     uniqueIDs = new Set();
 
@@ -35,8 +34,6 @@ export default class Layer {
         // Каждый слой хранит массив с фигурами, 
         // который она потом будет сама отрисовывать через вызов у каждой фигуры своего метода .renderAt()
         this.children = [];
-
-        this.grid = new Grid(this);
     }
 
     /**
@@ -72,9 +69,6 @@ export default class Layer {
         children.id = this.getUniqueID();
 
         this.children.push(children);
-
-        // обновляем состояние сетки после добавления новой фигуры
-        this.grid.update();
     }
 
     /**
@@ -87,7 +81,5 @@ export default class Layer {
         for(let child of this.children) {
             child.renderAt(this.context);
         }
-
-        this.grid.renderAt(this.context);
     }
 }
