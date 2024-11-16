@@ -16,7 +16,12 @@ export default class ConnectionLine {
     constructor(startPort: ConnectionPort, endPort: ConnectionPort) {
         this.endPoints = [startPort, endPort];
         this.points = this.buildPathTrace();
-        this.grid = new Grid(this);
+        this.grid = new Grid({
+            parent: this,
+            gridLineColor: 'rgba(255, 255, 255, 0.1)',
+            gridPointColor: 'magenta',
+            gridLineThickness: 1,
+        });
     }
 
 
