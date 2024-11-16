@@ -134,8 +134,8 @@ export default class ConnectionLine {
                 // если точка имеет такие же координаты что и точки из просещенных
                 // или точка внутри одного из прямоугольникв (с учётом отступа из класса PrimitiveShape)
                 if (visited.has(`${nextPoint.x},${nextPoint.y}`) ||
-                    isPointInsideRectangle(nextPoint, rect1, rect1.style.maring) ||
-                    isPointInsideRectangle(nextPoint, rect2, rect2.style.maring)
+                    isPointInsideRectangle(nextPoint, rect1, rect1.style.margin) ||
+                    isPointInsideRectangle(nextPoint, rect2, rect2.style.margin)
                 ) {
                     // то пропускаем данный цикл и переходим к следующему
                     continue;
@@ -175,6 +175,7 @@ export default class ConnectionLine {
     renderSegmentsAt(context: CanvasRenderingContext2D) {
         let segmentNotStarted = true;
 
+        context.beginPath();
         context.lineWidth = 1;
         context.strokeStyle = 'rgba(100, 100, 100, 1)';
 
@@ -190,6 +191,8 @@ export default class ConnectionLine {
 
             context.stroke();
         }
+
+        context.closePath();
     }
 
 

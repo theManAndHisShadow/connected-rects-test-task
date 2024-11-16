@@ -1,8 +1,9 @@
 type Style = {
     fillColor: string;
-    maring?: number | null;
     borderColor: string;
     borderThickness: number;
+    margin?: number | null;
+    visibility?: boolean | null;
 }
 
 type Point = {

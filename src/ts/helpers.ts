@@ -108,7 +108,22 @@ export function isPointInsideRectangle(point: Point, rect: Rectangle, margin: nu
     return isIntersects;
 }
 
-
+/**
+ * Вспомогательная функция, которая позволяет проверить находится ли заданная точка внутри окружности
+ * @param x - икс позиция точки
+ * @param y - игрек позиция точки
+ * @param cx - икс позиция центра окружности
+ * @param cy - игрек позиция центра окружности
+ * @param r - радиус окружности
+ * @returns 
+ */
+export function isPointInsideCircle(x: number, y: number, cx: number, cy: number, r: number): boolean {
+    // Сравниваем квадрат расстояния с квадратом радиуса
+    const distanceSquared = (x - cx) ** 2 + (y - cy) ** 2;
+    const radiusSquared = r ** 2;
+    
+    return distanceSquared <= radiusSquared;
+}
 
 
 /**

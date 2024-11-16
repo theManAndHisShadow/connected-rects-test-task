@@ -18,10 +18,10 @@ export default class RectangleShape extends PrimitiveShape implements Rectangle 
 
         this.ports = {
             // Я вынес порты за границу прямоугольника используя 'this.style.margin' ввиду бага (пока не исправлено)
-            A: new ConnectionPort({ letter: 'A', parent: this, angle: 180, r: 3, x: this.position.x - this.style.maring,  y: this.position.y + (this.size.height / 2) }),
-            B: new ConnectionPort({ letter: 'B', parent: this, angle: 90, r: 3, x: this.position.x + (this.size.width / 2),  y: this.position.y - this.style.maring}),
-            C: new ConnectionPort({ letter: 'C', parent: this, angle: 0, r: 3, x: this.position.x + this.size.width + this.style.maring,  y: this.position.y + (this.size.height / 2) }),
-            D: new ConnectionPort({ letter: 'D', parent: this, angle: 270, r: 3, x: this.position.x + (this.size.width / 2),  y: this.position.y + this.size.height + this.style.maring}),
+            A: new ConnectionPort({ letter: 'A', parent: this, angle: 180, r: 3, x: this.position.x - this.style.margin,  y: this.position.y + (this.size.height / 2) }),
+            B: new ConnectionPort({ letter: 'B', parent: this, angle: 90, r: 3, x: this.position.x + (this.size.width / 2),  y: this.position.y - this.style.margin}),
+            C: new ConnectionPort({ letter: 'C', parent: this, angle: 0, r: 3, x: this.position.x + this.size.width + this.style.margin,  y: this.position.y + (this.size.height / 2) }),
+            D: new ConnectionPort({ letter: 'D', parent: this, angle: 270, r: 3, x: this.position.x + (this.size.width / 2),  y: this.position.y + this.size.height + this.style.margin}),
         };
     }
 
