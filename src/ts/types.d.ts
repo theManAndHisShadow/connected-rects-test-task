@@ -2,7 +2,7 @@ type Style = {
     fillColor: string;
     borderColor: string;
     borderThickness: number;
-    maring?: number | null;
+    margin?: number | null;
     visibility?: boolean | null;
 }
 
