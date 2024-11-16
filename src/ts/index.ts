@@ -43,7 +43,7 @@ canvas.foreground.appendChild(rect1);
 canvas.foreground.appendChild(rect2);
 
 // testing main feature
-rect1.ports.B.connectTo(rect2.ports.A);
+rect1.ports.D.connectTo(rect2.ports.B);
 
 // rendering background and grid once for better performance
 canvas.background.fill(getColor('carbon'));
@@ -102,6 +102,29 @@ canvas.foreground.children.forEach(shape => {
     shape.addEventListener('dragend', event => {
         shape.updateOpacity(0.35);
         canvas.foreground.body.style.cursor = "pointer";
+    });
+
+    Object.values(shape.ports).forEach(port => {
+        port.addEventListener('mouseover', () => {
+            canvas.foreground.body.style.cursor = "pointer";
+            port.style.visibility = true;
+        });
+
+        port.addEventListener('hoveron', () => {
+            port.style.visibility = true;
+        });
+
+        port.addEventListener('hoveroff', () => {
+            port.style.visibility = false;
+        });
+
+        port.addEventListener('mouseout', () => {
+            canvas.foreground.body.style.cursor = "initial";
+        });
+
+        port.addEventListener('click', () => {
+            console.log('current selected port:', port);
+        });
     });
 
 });
