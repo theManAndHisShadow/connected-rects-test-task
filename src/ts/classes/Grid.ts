@@ -86,6 +86,9 @@ export default class Grid {
                 endPortOuterRectPoints.rightBottomPoint.x,
             ]),
         ];
+
+        delete startPortOuterRectPoints.centerPoint;
+        delete endPortOuterRectPoints.centerPoint;
     
         points.push(...Object.values(startPortOuterRectPoints));
         points.push(...Object.values(startPortMirrorPoints));
