@@ -12,7 +12,7 @@ const canvas = new InteractiveCanvas("#app-root", 500, 500);
     },
 
     position: {
-        x: 100, y: 50,
+        x: 50, y: 50,
     },
 
     style: {
@@ -28,7 +28,7 @@ const rect2 = new RectangleShape({
     },
 
     position: {
-        x: 330, y: 170,
+        x: 350, y: 350,
     },
 
     style: {
