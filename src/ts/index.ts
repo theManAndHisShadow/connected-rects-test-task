@@ -19,6 +19,7 @@ const canvas = new InteractiveCanvas("#app-root", 500, 500);
         fillColor: getColor('darkRed'),
         borderColor: getColor('brightRed'),
         borderThickness: 2,
+        margin: 20,
     },
 });
 
@@ -35,6 +36,7 @@ const rect2 = new RectangleShape({
         fillColor: getColor('darkBlue'),
         borderColor: getColor('brightBlue'),
         borderThickness: 2,
+        margin: 20,
     },
 });
 
