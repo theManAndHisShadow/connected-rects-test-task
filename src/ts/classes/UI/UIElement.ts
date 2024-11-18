@@ -91,8 +91,15 @@ export default class UIElement extends SynteticEventTarget{
           this.body.children[0].innerHTML = `${newValue}`;
     }
 
+    replaceChild(newChild: HTMLElement){
+      this.body.replaceChild(newChild, this.body.children[0]);
+    }
+
     resetValue(){
           this.value = null;
-          this.body.children[0].innerHTML = `<span style="color: rgba(255, 255, 255, 0.3)">null</span>`;
+
+          let defaultContainer = document.createElement('span');
+          defaultContainer.innerHTML = `<span style="color: rgba(255, 255, 255, 0.3)">null</span>`;
+          this.body.replaceChild(defaultContainer, this.body.children[0]);
     }
 }
