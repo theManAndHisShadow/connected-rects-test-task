@@ -24,14 +24,6 @@ body {
     left: 0;
 }
 
-.app-ui__container {
-    font-family: monospace;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    background: #141414;
-}
-
 .app-ui__container-inner {
     background: #00000042;
     margin: 10px;
@@ -113,6 +105,10 @@ body {
     transition: 0.3s ease-out;
 }
 
-.app-ui__item span {
-    font-style: italic;
+.json2html-pair > *, .json2html-complex-pair > * {
+    font-size: 13px !important;
+}
+
+.json2html-container {
+    background: none !important;
 }
