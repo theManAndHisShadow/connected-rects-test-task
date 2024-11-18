@@ -1,4 +1,4 @@
-import { getMousePos, isPointInsideCircle } from "../../helpers";
+import { getMousePos, isPointInsideCircle, isPointInsideRectangle } from "../../helpers";
 import Layer from "./Layer";
 
 /**
@@ -80,6 +80,17 @@ export default class InteractiveCanvas {
 
         this.addEventListener('mouseup', event => {
             this.isMousePressed = false;
+
+            if(event instanceof MouseEvent) {
+                let mousePos = getMousePos(this.foreground.body, event);
+
+
+                for(let child of this.foreground.children) {
+                    if(isPointInsideRectangle(mousePos, child)) {
+                        child.dispatchEvent('mouseup', {target: child});
+                    }
+                }
+            }
         });
 
         this.addEventListener('mousemove', event => {
