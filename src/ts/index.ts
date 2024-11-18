@@ -124,17 +124,20 @@ canvas.foreground.children.forEach(shape => {
         }
 
         canvas.foreground.body.style.cursor = "grab";
+    });
+
+    shape.addEventListener('dragend', event => {
+        shape.updateOpacity(0.35);
+        canvas.foreground.body.style.cursor = "pointer";
+    });
+
+    shape.addEventListener('mouseup', event => {
         ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
             class: 'RectangleShape',
             id: event.target.id,
             x: event.target.position.x,
             y: event.target.position.y,
         }));
-    });
-
-    shape.addEventListener('dragend', event => {
-        shape.updateOpacity(0.35);
-        canvas.foreground.body.style.cursor = "pointer";
     });
 
     Object.values(shape.ports).forEach(port => {
