@@ -1,14 +1,14 @@
 import { drawGrid, getColor } from "./helpers";
-import InteractiveCanvas from "./classes/InteractiveCanvas";
-import RectangleShape from "./classes/Rectangle";
-import UI from "./classes/UI";
+import InteractiveCanvas from "./classes/core/InteractiveCanvas";
+import RectangleShape from "./classes/core/Rectangle";
+import UI from "./classes/UI/UI";
 
 // init project canvas object
 const rootSelector = "#app-root";
 const width = 500;
 const height = 500;
-const canvas = new InteractiveCanvas("#app-root", width, height);
-const ui = new UI('#app-root', 250, height);
+const canvas = new InteractiveCanvas(rootSelector, width, height);
+const ui = new UI(rootSelector, 250, height);
 
  // creating base shapes
  const rect1 = new RectangleShape({
@@ -143,7 +143,5 @@ canvas.foreground.children.forEach(shape => {
 });
 
 canvas.processIntersectionsWithMouse();
-
-
 
 console.log(canvas, ui, rect1);
