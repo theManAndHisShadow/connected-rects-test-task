@@ -11,18 +11,18 @@ export default class UI {
         const containerInner = document.createElement('div');
               containerInner.classList.add('app-ui__container-inner');
               
-        const trigger = document.createElement('input');
-              trigger.type = 'checkbox';
-              trigger.checked = true;
-              trigger.setAttribute('checked', 'checked');
+        const renderGridToggle = document.createElement('input');
+              renderGridToggle.type = 'checkbox';
+              renderGridToggle.checked = true;
+              renderGridToggle.setAttribute('checked', 'checked');
 
-              trigger.addEventListener('change', () => {
-                  localStorage.setItem('renderGrid', JSON.stringify(trigger.checked));
+              renderGridToggle.addEventListener('change', () => {
+                  localStorage.setItem('renderGrid', JSON.stringify(renderGridToggle.checked));
               });
 
         const label = document.createElement('label');
               label.innerText = 'Render grid: ';
-              label.appendChild(trigger);
+              label.appendChild(renderGridToggle);
 
         const title = document.createElement('h3');
               title.innerText = '[Dev UI]';
