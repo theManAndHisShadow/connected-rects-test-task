@@ -2,13 +2,14 @@ import { drawGrid, getColor } from "./helpers";
 import InteractiveCanvas from "./classes/core/InteractiveCanvas";
 import RectangleShape from "./classes/core/Rectangle";
 import UI from "./classes/UI/UI";
+import { json2html } from "../libs/json2html/json2html";
 
 // init project canvas object
 const rootSelector = "#app-root";
 const width = 500;
 const height = 500;
 const canvas = new InteractiveCanvas(rootSelector, width, height);
-const ui = new UI(rootSelector, 250, height);
+const ui = new UI(rootSelector, 350, height);
 
  // creating base shapes
  const rect1 = new RectangleShape({
@@ -65,15 +66,31 @@ drawGrid(canvas.background.context, {
 const drawFrame = () => {
     requestAnimationFrame(drawFrame);
     canvas.foreground.render();
-}
+};
+
+const convertObjectToHTML = (objectToRender: object) => {
+    //@ts-ignore
+    return json2html({
+        json: JSON.stringify(objectToRender),
+        theme: 'dracula',
+        showTypeOnHover: true,
+    });
+};
 
 drawFrame();
+
 
 canvas.foreground.children.forEach(shape => {
     shape.addEventListener('mouseover', event => {
         shape.updateOpacity(0.35);
         canvas.foreground.body.style.cursor = "pointer";
-        ui.elements.mouseTarget.updateValue(`rect_${event.target.id}`);
+
+        ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
+            class: 'RectangleShape',
+            id: event.target.id,
+            x: event.target.position.x,
+            y: event.target.position.y,
+        }));
     });
 
     shape.addEventListener('mouseout', event => {
@@ -107,6 +124,12 @@ canvas.foreground.children.forEach(shape => {
         }
 
         canvas.foreground.body.style.cursor = "grab";
+        ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
+            class: 'RectangleShape',
+            id: event.target.id,
+            x: event.target.position.x,
+            y: event.target.position.y,
+        }));
     });
 
     shape.addEventListener('dragend', event => {
@@ -119,7 +142,15 @@ canvas.foreground.children.forEach(shape => {
             canvas.foreground.body.style.cursor = "pointer";
             port.style.visibility = true;
 
-            ui.elements.mouseTarget.updateValue(`port ${port.letter} of rect_${port.parent.id}`);
+            ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
+                class: 'ConnectingPort',
+                letter: port.letter,
+                x: port.connectionPoint.point.x,
+                y: port.connectionPoint.point.y,
+                parent: port.parent.id,
+                isBusy: port.isBusy,
+                endPoint: port.isBusy === true ? port.endPoint.parent.id : null,
+            }));
         });
 
         port.addEventListener('hoveron', () => {
