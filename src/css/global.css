@@ -112,3 +112,7 @@ body {
     background: none;
     transition: 0.3s ease-out;
 }
+
+.app-ui__item span {
+    font-style: italic;
+}
