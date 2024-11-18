@@ -1,4 +1,4 @@
-import { getMousePos, isPointInsideCircle } from "../helpers";
+import { getMousePos, isPointInsideCircle, isPointInsideRectangle } from "../../helpers";
 import Layer from "./Layer";
 
 /**
@@ -80,6 +80,17 @@ export default class InteractiveCanvas {
 
         this.addEventListener('mouseup', event => {
             this.isMousePressed = false;
+
+            if(event instanceof MouseEvent) {
+                let mousePos = getMousePos(this.foreground.body, event);
+
+
+                for(let child of this.foreground.children) {
+                    if(isPointInsideRectangle(mousePos, child)) {
+                        child.dispatchEvent('mouseup', {target: child});
+                    }
+                }
+            }
         });
 
         this.addEventListener('mousemove', event => {
@@ -97,6 +108,7 @@ export default class InteractiveCanvas {
                         let eventData = {
                             target: child,
                             mousePosition: mousePos,
+                            offset: {},
                         }
 
                         // (1) - Регистрируем событие движения внутри контура фигуры
@@ -112,13 +124,12 @@ export default class InteractiveCanvas {
 
                         // (3a) - Обработка перетаскивания (начало)
                         if (this.isMousePressed) {
-                            child.dispatchEvent('drag', {
-                                eventData,
-                                offset: {
-                                    x: mousePos.x - mouseDragStartPos.x,
-                                    y: mousePos.y - mouseDragStartPos.y
-                                }
-                            });
+                            eventData.offset = {
+                                x: mousePos.x - mouseDragStartPos.x,
+                                y: mousePos.y - mouseDragStartPos.y
+                            }
+
+                            child.dispatchEvent('drag', eventData);
 
                             mouseDragStartPos = mousePos; // важно, для перетаскивания нужно каждый раз перезаписывать данное свойство
                             child.eventStates.drag = true;

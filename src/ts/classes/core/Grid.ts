@@ -1,7 +1,4 @@
-import { getEuclidDistance } from "../helpers";
-import ConnectionPort from "./ConnectingPort";
 import ConnectionLine from "./ConnectionLine";
-import Layer from "./Layer";
 
 export default class Grid {
     parent: ConnectionLine;
@@ -89,6 +86,9 @@ export default class Grid {
                 endPortOuterRectPoints.rightBottomPoint.x,
             ]),
         ];
+
+        delete startPortOuterRectPoints.centerPoint;
+        delete endPortOuterRectPoints.centerPoint;
     
         points.push(...Object.values(startPortOuterRectPoints));
         points.push(...Object.values(startPortMirrorPoints));

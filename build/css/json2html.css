@@ -1,0 +1,77 @@
+.json2html-pair  > *, 
+.json2html-complex-pair > * {
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.json2html-complex-pair > span {
+    cursor: pointer;
+}
+
+.json2html-complex-pair div {
+    margin-left: 10px;
+    white-space: nowrap;
+    margin-top: 2px;
+}
+
+.json2html-spoiler-toggle--collapsed {
+    display: inline-block;
+    margin-right: -7px;
+    position: relative;
+    right: 9px;
+    font-size: 10px;
+    bottom: 1px;
+    transition: 0.3s ease;
+}
+
+.json2html-spoiler-toggle--uncollapsed {
+    display: inline-block;
+    margin-right: -7px;
+    position: relative;
+    right: 9px;
+    font-size: 10px;
+    transition: 0.3s ease;
+    transform: rotate(90deg);
+    bottom: -1px;
+} 
+
+.json2html-value {
+    margin-left: -7px;
+    word-break: break-all;
+    white-space: normal;
+}
+
+.json2html-type__object, 
+.json2html-type__array {
+    font-style: italic;
+}
+
+.json2html-collapse-all-toggle:hover {
+    text-decoration: underline;
+}
+
+.json2html-collapse-all-toggle {
+    opacity: 0;
+    position: relative;
+    padding-left: 10px;
+    transition: 0.3s ease;
+}
+
+.json2html-container {
+    padding: 3px 10px;
+    margin-left: 5px;
+}
+
+.json2html-container:first-child {
+    margin-left: 0px;
+    padding-left: 15px;
+}
+
+.json2html-spoiler-toggle--uncollapsed:hover ~ .json2html-collapse-all-toggle,
+.json2html-key:hover ~ .json2html-collapse-all-toggle,
+.json2html-type__array:hover ~ .json2html-collapse-all-toggle,
+.json2html-type__object:hover ~ .json2html-collapse-all-toggle,
+.json2html-collapse-all-toggle:hover,
+.json2html-uncollapse-all:hover {
+    opacity: 0.5;
+}

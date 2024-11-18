@@ -1,9 +1,15 @@
 import { drawGrid, getColor } from "./helpers";
-import InteractiveCanvas from "./classes/InteractiveCanvas";
-import RectangleShape from "./classes/Rectangle";
+import InteractiveCanvas from "./classes/core/InteractiveCanvas";
+import RectangleShape from "./classes/core/Rectangle";
+import UI from "./classes/UI/UI";
+import { json2html } from "../libs/json2html/json2html";
 
 // init project canvas object
-const canvas = new InteractiveCanvas("#app-root", 500, 500);
+const rootSelector = "#app-root";
+const width = 500;
+const height = 500;
+const canvas = new InteractiveCanvas(rootSelector, width, height);
+const ui = new UI(rootSelector, 350, height);
 
  // creating base shapes
  const rect1 = new RectangleShape({
@@ -12,13 +18,14 @@ const canvas = new InteractiveCanvas("#app-root", 500, 500);
     },
 
     position: {
-        x: 100, y: 50,
+        x: 50, y: 50,
     },
 
     style: {
         fillColor: getColor('darkRed'),
         borderColor: getColor('brightRed'),
         borderThickness: 2,
+        margin: 20,
     },
 });
 
@@ -28,13 +35,14 @@ const rect2 = new RectangleShape({
     },
 
     position: {
-        x: 330, y: 170,
+        x: 350, y: 350,
     },
 
     style: {
         fillColor: getColor('darkBlue'),
         borderColor: getColor('brightBlue'),
         borderThickness: 2,
+        margin: 20,
     },
 });
 
@@ -58,19 +66,38 @@ drawGrid(canvas.background.context, {
 const drawFrame = () => {
     requestAnimationFrame(drawFrame);
     canvas.foreground.render();
-}
+};
+
+const convertObjectToHTML = (objectToRender: object) => {
+    //@ts-ignore
+    return json2html({
+        json: JSON.stringify(objectToRender),
+        theme: 'dracula',
+        showTypeOnHover: true,
+    });
+};
 
 drawFrame();
+
 
 canvas.foreground.children.forEach(shape => {
     shape.addEventListener('mouseover', event => {
         shape.updateOpacity(0.35);
         canvas.foreground.body.style.cursor = "pointer";
+
+        ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
+            class: 'RectangleShape',
+            id: event.target.id,
+            x: event.target.position.x,
+            y: event.target.position.y,
+        }));
     });
 
     shape.addEventListener('mouseout', event => {
         shape.updateOpacity(1);
         canvas.foreground.body.style.cursor = "initial";
+
+        ui.elements.mouseTarget.resetValue();
     });
 
     shape.addEventListener('drag', event => {
@@ -104,10 +131,29 @@ canvas.foreground.children.forEach(shape => {
         canvas.foreground.body.style.cursor = "pointer";
     });
 
+    shape.addEventListener('mouseup', event => {
+        ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
+            class: 'RectangleShape',
+            id: event.target.id,
+            x: event.target.position.x,
+            y: event.target.position.y,
+        }));
+    });
+
     Object.values(shape.ports).forEach(port => {
         port.addEventListener('mouseover', () => {
             canvas.foreground.body.style.cursor = "pointer";
             port.style.visibility = true;
+
+            ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
+                class: 'ConnectingPort',
+                letter: port.letter,
+                x: port.connectionPoint.point.x,
+                y: port.connectionPoint.point.y,
+                parent: port.parent.id,
+                isBusy: port.isBusy,
+                endPoint: port.isBusy === true ? port.endPoint.parent.id : null,
+            }));
         });
 
         port.addEventListener('hoveron', () => {
@@ -120,6 +166,7 @@ canvas.foreground.children.forEach(shape => {
 
         port.addEventListener('mouseout', () => {
             canvas.foreground.body.style.cursor = "initial";
+            ui.elements.mouseTarget.resetValue();
         });
 
         port.addEventListener('click', () => {
@@ -131,6 +178,4 @@ canvas.foreground.children.forEach(shape => {
 
 canvas.processIntersectionsWithMouse();
 
-
-
-console.log(canvas, rect1);
+console.log(canvas, ui, rect1);
