@@ -97,6 +97,7 @@ export default class InteractiveCanvas {
                         let eventData = {
                             target: child,
                             mousePosition: mousePos,
+                            offset: {},
                         }
 
                         // (1) - Регистрируем событие движения внутри контура фигуры
@@ -112,13 +113,12 @@ export default class InteractiveCanvas {
 
                         // (3a) - Обработка перетаскивания (начало)
                         if (this.isMousePressed) {
-                            child.dispatchEvent('drag', {
-                                eventData,
-                                offset: {
-                                    x: mousePos.x - mouseDragStartPos.x,
-                                    y: mousePos.y - mouseDragStartPos.y
-                                }
-                            });
+                            eventData.offset = {
+                                x: mousePos.x - mouseDragStartPos.x,
+                                y: mousePos.y - mouseDragStartPos.y
+                            }
+
+                            child.dispatchEvent('drag', eventData);
 
                             mouseDragStartPos = mousePos; // важно, для перетаскивания нужно каждый раз перезаписывать данное свойство
                             child.eventStates.drag = true;
