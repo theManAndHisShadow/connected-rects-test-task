@@ -1,5 +1,5 @@
-import { isPointInsideRectangle, getEuclidDistance, getManhattanDistance } from "../helpers";
-import PriorityHeap from "./PriorityHeap";
+import { isPointInsideRectangle, getEuclidDistance, getManhattanDistance } from "../../helpers";
+import PriorityHeap from "../PriorityHeap";
 import ConnectionPort from "./ConnectingPort";
 import Grid from "./Grid";
 

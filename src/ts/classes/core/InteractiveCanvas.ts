@@ -1,4 +1,4 @@
-import { getMousePos, isPointInsideCircle } from "../helpers";
+import { getMousePos, isPointInsideCircle } from "../../helpers";
 import Layer from "./Layer";
 
 /**
