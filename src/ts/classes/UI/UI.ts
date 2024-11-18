@@ -44,6 +44,9 @@ export default class UI {
                   settingsKey: null,
             });
 
+            // hotfix
+            mouseTarget.body.style.width = '100%';
+
             // записываем их в экземляр класса
             this.elements = {
                   renderGrid,
