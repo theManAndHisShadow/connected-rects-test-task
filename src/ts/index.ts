@@ -73,11 +73,14 @@ canvas.foreground.children.forEach(shape => {
     shape.addEventListener('mouseover', event => {
         shape.updateOpacity(0.35);
         canvas.foreground.body.style.cursor = "pointer";
+        ui.elements.mouseTarget.updateValue(`rect_${event.target.id}`);
     });
 
     shape.addEventListener('mouseout', event => {
         shape.updateOpacity(1);
         canvas.foreground.body.style.cursor = "initial";
+
+        ui.elements.mouseTarget.resetValue();
     });
 
     shape.addEventListener('drag', event => {
@@ -115,6 +118,8 @@ canvas.foreground.children.forEach(shape => {
         port.addEventListener('mouseover', () => {
             canvas.foreground.body.style.cursor = "pointer";
             port.style.visibility = true;
+
+            ui.elements.mouseTarget.updateValue(`port ${port.letter} of rect_${port.parent.id}`);
         });
 
         port.addEventListener('hoveron', () => {
@@ -127,6 +132,7 @@ canvas.foreground.children.forEach(shape => {
 
         port.addEventListener('mouseout', () => {
             canvas.foreground.body.style.cursor = "initial";
+            ui.elements.mouseTarget.resetValue();
         });
 
         port.addEventListener('click', () => {
@@ -140,4 +146,4 @@ canvas.processIntersectionsWithMouse();
 
 
 
-console.log(canvas, rect1);
+console.log(canvas, ui, rect1);
