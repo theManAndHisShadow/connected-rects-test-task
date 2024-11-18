@@ -92,6 +92,9 @@ export default class ConnectionLine {
     renderAt(context: CanvasRenderingContext2D) {
         // отрисовываем сначала сегменты пути
         this.renderSegmentsAt(context);
-        this.grid.renderAt(context);
+
+        if(localStorage.getItem('renderGrid') == 'true') {
+            this.grid.renderAt(context);
+        }
     }
 }

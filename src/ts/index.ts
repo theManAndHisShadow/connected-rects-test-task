@@ -1,9 +1,14 @@
 import { drawGrid, getColor } from "./helpers";
 import InteractiveCanvas from "./classes/InteractiveCanvas";
 import RectangleShape from "./classes/Rectangle";
+import UI from "./classes/UI";
 
 // init project canvas object
-const canvas = new InteractiveCanvas("#app-root", 500, 500);
+const rootSelector = "#app-root";
+const width = 500;
+const height = 500;
+const canvas = new InteractiveCanvas("#app-root", width, height);
+const ui = new UI('#app-root', 250, height);
 
  // creating base shapes
  const rect1 = new RectangleShape({
