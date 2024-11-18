@@ -10,6 +10,10 @@ export default class UI {
 
         const containerInner = document.createElement('div');
               containerInner.classList.add('app-ui__container-inner');
+
+        const mouseTargetDisplay = document.createElement('div');
+              mouseTargetDisplay.classList.add('app-ui__mouse-target-display', 'app-ui__item');
+              mouseTargetDisplay.innerHTML = 'Mouse target: ';
               
         const renderGridToggle = document.createElement('input');
               renderGridToggle.type = 'checkbox';
@@ -20,16 +24,18 @@ export default class UI {
                   localStorage.setItem('renderGrid', JSON.stringify(renderGridToggle.checked));
               });
 
-        const label = document.createElement('label');
-              label.innerText = 'Render grid: ';
-              label.appendChild(renderGridToggle);
+        const renderGridToggleContainer = document.createElement('label');
+              renderGridToggleContainer.innerText = 'Render grid: ';
+              renderGridToggleContainer.classList.add('app-ui__item');
+              renderGridToggleContainer.appendChild(renderGridToggle);
 
         const title = document.createElement('h3');
               title.innerText = '[Dev UI]';
               title.classList.add('app-ui__title');
 
         containerInner.appendChild(title);
-        containerInner.appendChild(label);
+        containerInner.appendChild(mouseTargetDisplay);
+        containerInner.appendChild(renderGridToggleContainer);
         container.appendChild(containerInner);
 
         const appRoot = document.querySelector(cssSelector);
