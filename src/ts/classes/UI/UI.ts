@@ -56,8 +56,8 @@ export default class UI {
 
             // добавляем в внутреннией контейнер панели
             containerInner.appendChild(title);
-            containerInner.appendChild(this.elements.mouseTarget.body);
             containerInner.appendChild(this.elements.renderGrid.body);
+            containerInner.appendChild(this.elements.mouseTarget.body);
 
             // добавляем внутренности в контейнер UI
             container.appendChild(containerInner);
