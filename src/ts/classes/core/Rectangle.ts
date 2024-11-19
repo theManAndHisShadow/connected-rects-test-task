@@ -4,7 +4,6 @@ import PrimitiveShape from "./Primitive";
 
 export default class RectangleShape extends PrimitiveShape implements Rectangle {
     position: Point;
-    previousPosition: null | Point;
     size: Size;
     style: Style;
     ports: PortsMap;
@@ -14,9 +13,6 @@ export default class RectangleShape extends PrimitiveShape implements Rectangle 
         super(params);
 
         Object.assign(this, params);
-
-        this.previousPosition = null;
-        this.isIntersecting = false;
 
         this.ports = new PortsMap({
             // Я вынес порты за границу прямоугольника используя 'this.style.margin' ввиду бага (пока не исправлено)
