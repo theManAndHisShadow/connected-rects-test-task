@@ -98,8 +98,9 @@ export default class Grid {
         points.push(...gridPoints);
     
         return points.filter(point => {
-            let insideRect1 = isPointInsideRectangle(point, startPort.parent);
-            let insideRect2 = isPointInsideRectangle(point, endPort.parent);
+            //
+            let insideRect1 = isPointInsideRectangle(point, startPort.parent, startPort.parent.style.margin - 1);
+            let insideRect2 = isPointInsideRectangle(point, endPort.parent, endPort.parent.style.margin - 1);
             
             if(!insideRect1 && !insideRect2) return point;
         });
