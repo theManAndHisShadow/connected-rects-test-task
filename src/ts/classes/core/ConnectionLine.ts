@@ -52,8 +52,7 @@ export default class ConnectionLine {
      * @returns 
      */
     private findShortestPath(rect1: Rectangle, port1: ConnectionPort, rect2: Rectangle, port2: ConnectionPort): Point[] {
-        
-        return [];
+        return this.grid.findShortPath(port1.connectionPoint.point, port2.connectionPoint.point, 5, 5);
     }
     
     
