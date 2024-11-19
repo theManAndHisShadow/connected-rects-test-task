@@ -43,18 +43,15 @@ export default class PrimitiveShape extends SynteticEventTarget implements Geome
      * @returns - возвращает истину, если фигура пересекается
      */
     isIntersectsWith(shapes: PrimitiveShape[] | RectangleShape[]): boolean{
-        let offset = 2; // некоторый отступ чтобы учитывалась толщина границы фигуры
+        let offset = this.style.margin * 2; 
 
         for(let shape of shapes) {
-            // исключаем саму фигур, иначе будет автосрабатывание
-            if(this.id !== shape.id) {
-                const intersects = this.position.x + this.size.width + offset >= shape.position.x &&
-                                   this.position.x - offset <= shape.position.x + shape.size.width &&
-                                   this.position.y + this.size.height + offset >= shape.position.y  &&
-                                   this.position.y - offset <= shape.position.y + shape.size.height
+            const intersects = this.position.x + this.size.width + offset >= shape.position.x &&
+            this.position.x - offset <= shape.position.x + shape.size.width &&
+            this.position.y + this.size.height + offset >= shape.position.y  &&
+            this.position.y - offset <= shape.position.y + shape.size.height
 
-                if(intersects) return true;
-            }
+            if(intersects) return true;
         }
 
         return false
