@@ -102,26 +102,14 @@ canvas.foreground.children.forEach(shape => {
 
     shape.addEventListener('drag', event => {
         shape.updateOpacity(0.1);
-        
-        // Сохраняем текущее положение перед перемещением
-        const previousPosition = { x: shape.position.x, y: shape.position.y };
+    
 
         // Обновляем позицию на основе события перетаскивания
         shape.moveTo(
             event.offset.x - shape.size.width / 2,
-            event.offset.y - shape.size.height / 2
+            event.offset.y - shape.size.height / 2,
+            canvas.foreground.children
         );
-
-        // Проверяем пересечение после перемещения
-        // NB: тут если использовать 3 фигуры, например, то при расположенные 3 фигур вплотную рядом, произойдёт блокирование средней фигуры
-        // Поэтому систему проверки нужно делать с проверкой конкретного направления, напримеро через вспомогательные значения дельта x и дельта y
-        if (shape.isIntersectsWith(canvas.foreground.children)) {
-            // Если пересечение обнаружено, возвращаем фигуру на предыдущее место
-            shape.moveTo(
-                previousPosition.x,
-                previousPosition.y
-            );
-        }
 
         canvas.foreground.body.style.cursor = "grab";
     });
