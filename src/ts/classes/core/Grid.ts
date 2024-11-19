@@ -113,7 +113,7 @@ export default class Grid {
         });;
     }
 
-    findShortPath(from: Point, to: Point, tolerance: number, step: number,): Point[]{        
+    findShortPath(from: Point, to: Point, tolerance: number, step: number): Point[]{        
         const path: Point[] = [from];
 
         // проверка если точка в окрестностях другой точки
