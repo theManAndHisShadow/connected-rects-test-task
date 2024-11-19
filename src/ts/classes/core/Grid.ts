@@ -1,3 +1,4 @@
+import { isPointInsideRectangle } from "../../helpers";
 import ConnectionLine from "./ConnectionLine";
 
 export default class Grid {
@@ -96,7 +97,12 @@ export default class Grid {
         points.push(...Object.values(endPortMirrorPoints));
         points.push(...gridPoints);
     
-        return points;
+        return points.filter(point => {
+            let insideRect1 = isPointInsideRectangle(point, startPort.parent);
+            let insideRect2 = isPointInsideRectangle(point, endPort.parent);
+            
+            if(!insideRect1 && !insideRect2) return point;
+        });
     }
     
 
@@ -138,37 +144,37 @@ export default class Grid {
             return map;
         };
     
-        // Горизонтальные линии
-        // группируем все точки по игреку
-        const rows = groupBy(this.points, 'y');
+        // // Горизонтальные линии
+        // // группируем все точки по игреку
+        // const rows = groupBy(this.points, 'y');
     
-        // рисуем все точки изз группы "строки"
-        rows.forEach(points => {
-            context.beginPath();
-            points.sort((a, b) => a.x - b.x); // Сортируем по x
-            for (let i = 0; i < points.length - 1; i++) {
-                context.moveTo(points[i].x, points[i].y);
-                context.lineTo(points[i + 1].x, points[i + 1].y);
-            }
-            context.stroke();
-            context.closePath();
-        });
+        // // рисуем все точки изз группы "строки"
+        // rows.forEach(points => {
+        //     context.beginPath();
+        //     points.sort((a, b) => a.x - b.x); // Сортируем по x
+        //     for (let i = 0; i < points.length - 1; i++) {
+        //         context.moveTo(points[i].x, points[i].y);
+        //         context.lineTo(points[i + 1].x, points[i + 1].y);
+        //     }
+        //     context.stroke();
+        //     context.closePath();
+        // });
     
-        // Вертикальные линии
-        // групперуем все точки по иксу
-        const columns = groupBy(this.points, 'x');
+        // // Вертикальные линии
+        // // групперуем все точки по иксу
+        // const columns = groupBy(this.points, 'x');
 
-        // рисуем все точки из группы "колонки"
-        columns.forEach(points => {
-            context.beginPath();
-            points.sort((a, b) => a.y - b.y); // Сортируем по y
-            for (let i = 0; i < points.length - 1; i++) {
-                context.moveTo(points[i].x, points[i].y);
-                context.lineTo(points[i + 1].x, points[i + 1].y);
-            }
-            context.stroke();
-            context.closePath();
-        });
+        // // рисуем все точки из группы "колонки"
+        // columns.forEach(points => {
+        //     context.beginPath();
+        //     points.sort((a, b) => a.y - b.y); // Сортируем по y
+        //     for (let i = 0; i < points.length - 1; i++) {
+        //         context.moveTo(points[i].x, points[i].y);
+        //         context.lineTo(points[i + 1].x, points[i + 1].y);
+        //     }
+        //     context.stroke();
+        //     context.closePath();
+        // });
     
         // Рисуем узлы (точки)
         this.points.forEach(point => {
