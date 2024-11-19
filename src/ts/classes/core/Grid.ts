@@ -4,12 +4,14 @@ import ConnectionLine from "./ConnectionLine";
 export default class Grid {
     parent: ConnectionLine;
     points: Point[];
+    steppings: number[];
     gridLineColor: string;
     gridPointColor: string;
     gridLineThickness: number;
 
     constructor({parent, gridLineColor, gridPointColor, gridLineThickness}: {parent: ConnectionLine, gridLineColor: string, gridPointColor: string, gridLineThickness: number}) {
         this.parent = parent;
+        this.steppings = [];
         this.points = this.generate();
         this.gridLineColor = gridLineColor;
         this.gridLineThickness = gridLineThickness;
@@ -103,7 +105,24 @@ export default class Grid {
             let insideRect2 = isPointInsideRectangle(point, endPort.parent, endPort.parent.style.margin - 1);
             
             if(!insideRect1 && !insideRect2) return point;
-        });
+        }).sort((a, b) => {
+            if (a.x === b.x) {
+                return a.y - b.y; 
+            }
+            return a.x - b.x; 
+        });;
+    }
+
+    findShortPath(from: Point, to: Point, tolerance: number, step: number,): Point[]{        
+        const path: Point[] = [from];
+
+        // проверка если точка в окрестностях другой точки
+        const isWithinTolerance = (point: Point, target: Point) => {
+            return Math.abs(point.x - target.x) <= tolerance && Math.abs(point.y - target.y) <= tolerance;
+        };
+
+        path.push(to);
+        return path;
     }
     
 
