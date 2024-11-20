@@ -7,7 +7,6 @@ export default class ConnectionLine {
     graph: Graph;
     color: string;
 
-
     /**
      * Класс линии соединения.
      * Хранит начало и конец линии и промежуточные точки.
@@ -40,8 +39,9 @@ export default class ConnectionLine {
     /**
      * Отрисовывает маленький сегмент от самого края фигуры до порта.
      * @param context - Контекст, где происходит отрисовка
+     * @param dashed - Должна ли линия быть пунктирной
      */
-    private renderConnecterSegmentAt(context: CanvasRenderingContext2D) {
+    private renderConnecterSegmentAt(context: CanvasRenderingContext2D, dashed: boolean) {
         // если по какой-то причине порт недействителен - прервать выполнение
         if (!this.endPoints[0] || !this.endPoints[1]) {
             console.error('Один из портов пустой! Массив текущих значений: ', this.endPoints);
@@ -90,11 +90,18 @@ export default class ConnectionLine {
 
         // отрисовываем в цикле от start до end пар
         points.forEach(([start, end]) => {
+            if(dashed) {
+                context.setLineDash([5, 5]);
+                context.lineDashOffset = 5;
+            }
+
             context.beginPath();
             context.moveTo(start.x, start.y);
             context.lineTo(end.x, end.y);
             context.stroke();
             context.closePath();
+
+            if(dashed) context.setLineDash([]);
         });
     }
 
@@ -104,13 +111,16 @@ export default class ConnectionLine {
     /**
      * Отриссовывает линию по сегментам.
      * @param context - Куда орисовать линию.
+     * @param dashed - Должна ли линия быть пунктирной
      */
-    private renderSegmentsAt(context: CanvasRenderingContext2D) {
+    private renderSegmentsAt(context: CanvasRenderingContext2D, dashed: boolean) {
         let segmentNotStarted = true;
 
         context.strokeStyle = this.color;
         context.lineWidth = 1;
         context.beginPath();
+
+        if(dashed) context.setLineDash([5, 5]);
 
         for (let i = 0; i < this.points.length; i++) {
             let point = this.points[i];
@@ -127,6 +137,7 @@ export default class ConnectionLine {
         context.stroke();
         context.closePath();
 
+        if(dashed)  context.setLineDash([]);
     }
     
 
@@ -136,13 +147,17 @@ export default class ConnectionLine {
      * @param context - Куда орисовать
     */
    renderAt(context: CanvasRenderingContext2D) {
-        // отрисовываем сначала сегменты пути
-        this.renderSegmentsAt(context);
+        // получаем данные по параметрам отрисовки
+        const useDashedLine = JSON.parse(localStorage.getItem('useDashedLine'));
+        const renderGrid = JSON.parse(localStorage.getItem('renderGrid'))
 
-        this.renderConnecterSegmentAt(context);
+        // отрисовываем сначала сегменты пути
+        this.renderSegmentsAt(context, useDashedLine);
+
+        this.renderConnecterSegmentAt(context, useDashedLine);
         
         // если в панели справа стоит галочка 
-        if(JSON.parse(localStorage.getItem('renderGrid'))) {
+        if(renderGrid) {
             this.graph.renderAt(context);
         }
     }
