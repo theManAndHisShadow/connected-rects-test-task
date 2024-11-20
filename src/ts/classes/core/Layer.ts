@@ -1,6 +1,5 @@
 import InteractiveCanvas from "./InteractiveCanvas";
 import RectangleShape from "./Rectangle";
-import Grid from "./Grid";
 
 /**
  * Класс слоя холста.

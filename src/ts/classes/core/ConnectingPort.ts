@@ -1,4 +1,5 @@
 import ConnectionLine from "./ConnectionLine";
+import RectangleShape from "./Rectangle";
 import SynteticEventTarget from "./SynteticEventTarget";
 
 export default class ConnectionPort extends SynteticEventTarget{
@@ -6,13 +7,13 @@ export default class ConnectionPort extends SynteticEventTarget{
     style: Style;
     r: number;
     hoverR: number;
-    parent: Rectangle;
+    parent: RectangleShape;
     letter: string;
     isBusy: boolean;
     endPoint: null | ConnectionPort;
     connection: ConnectionLine | null; 
 
-    constructor(params: { letter: string, x: number, y: number, r: number, parent: Rectangle, angle: number}) {
+    constructor(params: { letter: string, x: number, y: number, r: number, parent: RectangleShape, angle: number}) {
         super();
 
         this.connectionPoint = {

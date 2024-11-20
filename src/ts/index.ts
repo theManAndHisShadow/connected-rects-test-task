@@ -2,6 +2,8 @@ import { drawGrid, getColor } from "./helpers";
 import InteractiveCanvas from "./classes/core/InteractiveCanvas";
 import RectangleShape from "./classes/core/Rectangle";
 import UI from "./classes/UI/UI";
+
+// external lib for data visualization
 import { json2html } from "../libs/json2html/json2html";
 
 // init project canvas object
@@ -51,7 +53,7 @@ canvas.foreground.appendChild(rect1);
 canvas.foreground.appendChild(rect2);
 
 // testing main feature
-rect1.ports.D.connectTo(rect2.ports.B);
+rect1.ports.C.connectTo(rect2.ports.B);
 
 // rendering background and grid once for better performance
 canvas.background.fill(getColor('carbon'));
@@ -102,26 +104,14 @@ canvas.foreground.children.forEach(shape => {
 
     shape.addEventListener('drag', event => {
         shape.updateOpacity(0.1);
-        
-        // Сохраняем текущее положение перед перемещением
-        const previousPosition = { x: shape.position.x, y: shape.position.y };
+    
 
         // Обновляем позицию на основе события перетаскивания
         shape.moveTo(
             event.offset.x - shape.size.width / 2,
-            event.offset.y - shape.size.height / 2
+            event.offset.y - shape.size.height / 2,
+            canvas.foreground.children
         );
-
-        // Проверяем пересечение после перемещения
-        // NB: тут если использовать 3 фигуры, например, то при расположенные 3 фигур вплотную рядом, произойдёт блокирование средней фигуры
-        // Поэтому систему проверки нужно делать с проверкой конкретного направления, напримеро через вспомогательные значения дельта x и дельта y
-        if (shape.isIntersectsWith(canvas.foreground.children)) {
-            // Если пересечение обнаружено, возвращаем фигуру на предыдущее место
-            shape.moveTo(
-                previousPosition.x,
-                previousPosition.y
-            );
-        }
 
         canvas.foreground.body.style.cursor = "grab";
     });

@@ -33,3 +33,17 @@ type ConnectionPoint = {
 type ShapeEventStorage = {
     [key: string]: Array<(data: any) => void>;
 }
+
+type GraphNodeType = {
+    x: number;
+    y: number;
+    r: number;
+    left: GraphNodeType | null;
+    right: GraphNodeType | null;
+    up: GraphNodeType | null;
+    down: GraphNodeType | null;
+};
+
+type GraphNodesMap = { 
+    [key: string]: GraphNodeType;
+ };
