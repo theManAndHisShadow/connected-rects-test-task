@@ -18,9 +18,18 @@ interface GraphConstructorParams {
     
 }
 
+interface QueueItem {
+    node: GraphNodeType;
+    path: GraphNodeType[];
+    distance: number;
+    turns: number;
+    direction: string | null;
+}
+
 export default class Graph {
     parent: ConnectionLine;
     nodes: GraphNodesMap;
+    lastPathData: QueueItem | null;
     style: GraphStyle;
     /**
      * 
@@ -41,6 +50,7 @@ export default class Graph {
         
         let rawPoints = this.generateSimpleGridPoints();
         this.nodes = this.createGraphFrom(rawPoints);
+        this.lastPathData = null;
 
         this.style = {
             graphNodeRadius: params.graphNodeRadius,
@@ -361,8 +371,9 @@ export default class Graph {
                 // Если адрес текущей точки совпадает полностью с адресом конечной 
                 // то возвращаем текущий путь, проделанной текущей точкой (последней на момент срабатывания условия)
 
-                console.log('Найден путь:', path);
-                console.log('Оставшиеся альтернативные пути:', queue);
+                // записываем последний успешный путь
+                this.lastPathData = current;
+                
                 return path;
             }
     
