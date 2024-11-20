@@ -1,68 +1,44 @@
-import { isPointInsideRectangle, getEuclidDistance, getManhattanDistance } from "../../helpers";
-import PriorityHeap from "../PriorityHeap";
 import ConnectionPort from "./ConnectingPort";
-import Grid from "./Grid";
+import Graph from "./Graph";
 
-/**
- * Класс линии соединения.
- * Хранит начало и конец линии и промежуточные точки
- * Позволяет удобным образом создавать массив точек, обновлять линию "пути" (соденинение) и 
- */
 export default class ConnectionLine {
     points: Point[];
-    grid: Grid;
+    graph: Graph;
     endPoints: ConnectionPort[];
 
+
+    /**
+     * Класс линии соединения.
+     * Хранит начало и конец линии и промежуточные точки.
+     * Так же хранит вспомогательный "граф" c узлами, на основе которых и строится линия.
+     */
     constructor(startPort: ConnectionPort, endPort: ConnectionPort) {
         this.endPoints = [startPort, endPort];
-        this.grid = new Grid({
+
+        // Создаём эземпляр класса "граф" для данной линии (соединения)
+        this.graph = new Graph ({
             parent: this,
-            gridLineColor: 'rgba(255, 255, 255, 0.1)',
-            gridPointColor: 'magenta',
-            gridLineThickness: 1,
+            graphNodeRadius: 2,
+            graphNodeColor: 'orange',
+            graphLineColor: 'rgba(255, 255, 255, 0.1)',
+            graphLineThickness: 1,
         });
-        this.points = this.buildPathTrace();
+
+        // Извлекаем позиции портов для связи
+        const port1 = this.endPoints[0].connectionPoint.point;
+        const port2 = this.endPoints[1].connectionPoint.point;
+
+        // Получаем массив точек самого короткого пути (и с самым наименьшим количеством поворотов) между 2 связанными портами
+        this.points = this.graph.findPathBetween(port1, port2);
     }
+
+
 
 
     /**
-     * Строит самый короткий путь между двумя энд поинтами.
-     * Путь будет с минимальным количеством поворотов и с минимальным пройденным расстоянием
-     * @returns - массив из примитивных точек
+     * Отриссовывает линию по сегментам.
+     * @param context - Куда орисовать линию.
      */
-    buildPathTrace(): Point[] {
-        let port1 = this.endPoints[0];
-        let port2 = this.endPoints[1];
-
-        let rect1 = port1.parent;
-        let rect2 = port2.parent;
-
-        console.log(this);
-        let generatedPath = this.findShortestPath(rect1, port1, rect2, port2);
-
-        return generatedPath;
-    }
-
-    /**
-     * 
-     * @param rect1 
-     * @param port1 
-     * @param rect2 
-     * @param port2 
-     * @returns 
-     */
-    private findShortestPath(rect1: Rectangle, port1: ConnectionPort, rect2: Rectangle, port2: ConnectionPort): Point[] {
-        return this.grid.findShortPath(port1.connectionPoint.point, port2.connectionPoint.point, 5, 5);
-    }
-    
-    
-
-
-    updatePath() {
-        this.points = this.buildPathTrace();
-        this.grid.update();
-    }
-
     renderSegmentsAt(context: CanvasRenderingContext2D) {
         let segmentNotStarted = true;
 
@@ -88,12 +64,17 @@ export default class ConnectionLine {
 
 
 
+    /**
+     *  Отрисовывает линию и (при необходимости) граф между 2 соединенными фигурами.
+     * @param context - Куда орисовать
+     */
     renderAt(context: CanvasRenderingContext2D) {
         // отрисовываем сначала сегменты пути
         this.renderSegmentsAt(context);
 
-        if(localStorage.getItem('renderGrid') == 'true') {
-            this.grid.renderAt(context);
+        // если в панели справа стоит галочка 
+        if(JSON.parse(localStorage.getItem('renderGrid'))) {
+            this.graph.renderAt(context);
         }
     }
 }
