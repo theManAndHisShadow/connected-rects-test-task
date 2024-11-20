@@ -65,4 +65,22 @@ export default class RectangleShape extends PrimitiveShape implements Rectangle 
             sidePoint.renderAt(context);
         })
     }
+
+
+    // Геттеры получения 4 углов
+    get left(): number {
+        return this.position.x;
+    }
+
+    get right(): number {
+        return this.position.x + this.size.width;
+    }
+
+    get top(): number {
+        return this.position.y;
+    }
+
+    get bottom(): number {
+        return this.position.y + this.size.height;
+    }
 }
