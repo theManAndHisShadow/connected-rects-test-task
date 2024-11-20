@@ -25,4 +25,8 @@ export default class PortsMap {
            }
         });
     }
+
+    getAll(): ConnectionPort[] {
+        return [this.A, this.B, this.C, this.D];
+    }
 }
