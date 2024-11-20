@@ -199,10 +199,6 @@ export default class Graph {
         // локальная вспомогательная функция, для получения адреса точки (не узла!)
         const getAddress = (point: Point) => `${point.x},${point.y}`;
     
-        // Порты обоих прямоугольников
-        const portsLocationsOfRect1: Point[] = rect1.ports.getAll().map(port => port.connectionPoint.point);
-        const portsLocationsOfRect2: Point[] = rect2.ports.getAll().map(port => port.connectionPoint.point);
-    
         // определяем локакьную вспомогательную функцию
         // Проверяем, разрешена ли связь между двумя точками
         // Связь будет запрещена, если середина соединения 2 любых, 
