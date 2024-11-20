@@ -55,9 +55,9 @@ export default class UIElement extends SynteticEventTarget{
                           // парсим значение из локал сторейдж
                           let valuesFromSettings: boolean | null = JSON.parse(localStorage.getItem(this.settingsKey) || 'null');
                   
-                          // если оно нулл - прерываем поток ошибкой
+                          // если оно нулл, то создаём такой свойство чтобы не было ошибок
                           if (valuesFromSettings === null) {
-                              throw new Error(`Can't find '${this.settingsKey}' key in settings!`);
+                              localStorage.setItem(this.settingsKey, JSON.stringify(this.value));
                           }
                   
                           // назначаем элементу значение из настроек, если в насройках есть соотвествующий ключ
