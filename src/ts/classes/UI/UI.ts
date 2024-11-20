@@ -36,6 +36,14 @@ export default class UI {
                   settingsKey: 'renderGrid',
             });
 
+            const useDashedLine = new UIElement({
+                  type: 'checkbox',
+                  label: 'Use dashed line',
+                  classNames: [],
+                  value: false,
+                  settingsKey: 'useDashedLine',
+            })
+
             const mouseTarget = new UIElement({
                   type: 'text',
                   label: 'Mouse target',
@@ -50,6 +58,7 @@ export default class UI {
             // записываем их в экземляр класса
             this.elements = {
                   renderGrid,
+                  useDashedLine,
                   mouseTarget,
             };
 
@@ -60,6 +69,7 @@ export default class UI {
             // добавляем в внутреннией контейнер панели
             containerInner.appendChild(title);
             containerInner.appendChild(this.elements.renderGrid.body);
+            containerInner.appendChild(this.elements.useDashedLine.body);
             containerInner.appendChild(this.elements.mouseTarget.body);
 
             // добавляем внутренности в контейнер UI
