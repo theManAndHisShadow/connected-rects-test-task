@@ -2,6 +2,8 @@ import { drawGrid, getColor } from "./helpers";
 import InteractiveCanvas from "./classes/core/InteractiveCanvas";
 import RectangleShape from "./classes/core/Rectangle";
 import UI from "./classes/UI/UI";
+
+// external lib for data visualization
 import { json2html } from "../libs/json2html/json2html";
 
 // init project canvas object
@@ -51,7 +53,7 @@ canvas.foreground.appendChild(rect1);
 canvas.foreground.appendChild(rect2);
 
 // testing main feature
-rect1.ports.D.connectTo(rect2.ports.B);
+rect1.ports.C.connectTo(rect2.ports.B);
 
 // rendering background and grid once for better performance
 canvas.background.fill(getColor('carbon'));
