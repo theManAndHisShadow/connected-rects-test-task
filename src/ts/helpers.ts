@@ -161,3 +161,35 @@ export function getEuclidDistance(pointA: Point, pointB: Point): number{
 export function getManhattanDistance(pointA: Point, pointB: Point): number {
     return Math.abs(pointA.x - pointB.x) + Math.abs(pointA.y - pointB.y);
 }
+
+
+
+/**
+ * Превращает отсортированный массив точек в качестве входного потока
+ * По указанному компоненту превращает в 2 мерный массив точек (массив массивов)
+ * каждый вложенный массив содерждит точки с одинаковым x ИЛИ y компонентом
+ * @param positionComponent - x или y компонент позиции точек, по котороу идёт группировка
+ * @param points - входной массив точек. Должен быть отсортирован заранее!
+ * @returns - массив массивов точек
+ */
+export function groupPointsBy(positionComponent: 'x' | 'y', points: Point[]): Point[][] {
+    // заранее создаем объект для группировки
+    const groups: { [positionComponent: number]: Point[] } = {};
+
+    // перебираем все точки и группируем их по значению ключа
+    points.forEach((point) => {
+        const groupKey = point[positionComponent];
+
+        // если группа с таким ключом ещё не существует, то создаём её
+        if (!groups[groupKey]) {
+            groups[groupKey] = [];
+        }
+
+        // добавить точку в соответствующую группу
+        groups[groupKey].push(point);
+    });
+
+
+    // Возвращаем массив массивов сгруппированных точек
+    return Object.values(groups);
+}
