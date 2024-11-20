@@ -47,7 +47,7 @@ export default class ConnectionPort extends SynteticEventTarget{
         endPoint.isBusy = true;
 
 
-        this.connection = new ConnectionLine(this, this.endPoint);
+        this.connection = new ConnectionLine(this, this.endPoint, 'rgba(255, 255, 255, 0.5)');
         this.endPoint.connection = this.connection;
     }
 
@@ -55,7 +55,7 @@ export default class ConnectionPort extends SynteticEventTarget{
     // Если есть необхоимость перерисовать соединение
     // Новое соедниение учитывает новое состояние внешней среды (новые координаты прямоугольника и порта) и создаёт новый оптимальный путь
     reconnect(){
-        this.connection = new ConnectionLine(this, this.endPoint);
+        this.connection = new ConnectionLine(this, this.endPoint, 'rgba(255, 255, 255, 0.5)');
         this.endPoint.connection = this.connection;
     }
 

@@ -2,9 +2,10 @@ import ConnectionPort from "./ConnectingPort";
 import Graph from "./Graph";
 
 export default class ConnectionLine {
+    endPoints: ConnectionPort[];
     points: Point[];
     graph: Graph;
-    endPoints: ConnectionPort[];
+    color: string;
 
 
     /**
@@ -12,7 +13,7 @@ export default class ConnectionLine {
      * Хранит начало и конец линии и промежуточные точки.
      * Так же хранит вспомогательный "граф" c узлами, на основе которых и строится линия.
      */
-    constructor(startPort: ConnectionPort, endPort: ConnectionPort) {
+    constructor(startPort: ConnectionPort, endPort: ConnectionPort, color: string) {
         this.endPoints = [startPort, endPort];
 
         // Создаём эземпляр класса "граф" для данной линии (соединения)
@@ -30,6 +31,8 @@ export default class ConnectionLine {
 
         // Получаем массив точек самого короткого пути (и с самым наименьшим количеством поворотов) между 2 связанными портами
         this.points = this.graph.findPathBetween(port1, port2);
+
+        this.color = color;
     }
 
 
@@ -42,9 +45,9 @@ export default class ConnectionLine {
     renderSegmentsAt(context: CanvasRenderingContext2D) {
         let segmentNotStarted = true;
 
-        context.beginPath();
+        context.strokeStyle = this.color;
         context.lineWidth = 1;
-        context.strokeStyle = 'rgba(100, 100, 100, 1)';
+        context.beginPath();
 
         for (let i = 0; i < this.points.length; i++) {
             let point = this.points[i];
@@ -56,9 +59,9 @@ export default class ConnectionLine {
                 context.lineTo(point.x, point.y);
             }
 
-            context.stroke();
         }
-
+        
+        context.stroke();
         context.closePath();
     }
 
