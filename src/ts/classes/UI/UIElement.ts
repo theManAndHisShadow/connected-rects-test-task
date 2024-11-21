@@ -33,88 +33,88 @@ export default class UIElement extends SynteticEventTarget{
           console.log(params);
     }
 
-    private create(): HTMLElement {
-          // создаём элемент, который будет содержать и лейбел текст элемента и значение элемента
-          let labelElement = document.createElement('label');
+      private create(): HTMLElement {
+            // создаём элемент, который будет содержать и лейбел текст элемента и значение элемента
+            let labelElement = document.createElement('label');
 
-          // если классы установлены - назначить их элементу
-          if(this.classNames.length > 0) labelElement.classList.add(...this.classNames);
+            // если классы установлены - назначить их элементу
+            if (this.classNames.length > 0) labelElement.classList.add(...this.classNames);
 
-          // добавить базовый класс ui элемента
-          labelElement.classList.add('app-ui__item');
+            // добавить базовый класс ui элемента
+            labelElement.classList.add('app-ui__item');
 
-          // установить текст лейбла
-          labelElement.innerText = this.label + ': ';
+            // установить текст лейбла
+            labelElement.innerText = this.label + ': ';
 
-          // переменная, которая хранит "тело" значения или null
-          let valueContainer: HTMLSpanElement | HTMLInputElement | null = null;
+            // переменная, которая хранит "тело" значения или null
+            let valueContainer: HTMLSpanElement | HTMLInputElement | null = null;
 
-          //если тип "текст"
-          if (this.type == 'text') {
-                // сохдаём обычный  span элемент
-                valueContainer = document.createElement('span');
-                valueContainer.innerHTML = this.value === null ? `<span style="color: rgba(255, 255, 255, 0.3)">null</span>` : `${this.value}`;
-          } else if (this.type === 'checkbox' || this.type === 'dropdown-list') {
-                // если тип чекбокс - получить значение из localStorage
-                if (this.settingsKey && typeof this.settingsKey === 'string') {
-                      // парсим значение из локал сторейдж
-                      let valuesFromSettings: boolean | null = JSON.parse(localStorage.getItem(this.settingsKey));
+            //если тип "текст"
+            if (this.type == 'text') {
+                  // сохдаём обычный  span элемент
+                  valueContainer = document.createElement('span');
+                  valueContainer.innerHTML = this.value === null ? `<span style="color: rgba(255, 255, 255, 0.3)">null</span>` : `${this.value}`;
+            } else if (this.type === 'checkbox' || this.type === 'dropdown-list') {
+                  // если тип чекбокс - получить значение из localStorage
+                  if (this.settingsKey && typeof this.settingsKey === 'string') {
+                        // парсим значение из локал сторейдж
+                        let valuesFromSettings: boolean | null = JSON.parse(localStorage.getItem(this.settingsKey));
 
-                      // если оно нулл, то создаём такой свойство чтобы не было ошибок
-                      if (valuesFromSettings === null) {
+                        // если оно нулл, то создаём такой свойство чтобы не было ошибок
+                        if (valuesFromSettings === null) {
+                              localStorage.setItem(this.settingsKey, JSON.stringify(this.value));
+                        }
+
+                        // назначаем элементу значение из настроек, если в насройках есть соотвествующий ключ
+                        if(valuesFromSettings !== null) this.value = valuesFromSettings;
+
+
+                        if (this.type === 'checkbox') {
+                              // создаём само тело "значения"
+                              valueContainer = document.createElement('input');
+                              valueContainer.setAttribute('type', 'checkbox');
+
                               console.log(this.value);
-                            localStorage.setItem(this.settingsKey, JSON.stringify(this.value));
-                      }
 
-                      // назначаем элементу значение из настроек, если в насройках есть соотвествующий ключ
-                      this.value = valuesFromSettings;
-
-                      console.log(this.valuesList, this);
-
-                      if (this.type === 'checkbox') {
-                            // создаём само тело "значения"
-                            valueContainer = document.createElement('input');
-                            valueContainer.setAttribute('type', 'checkbox');
-
-                             // устанавливаем чекбокс в стостояние согласно состоянию в свойстве экземпляра
-                             (valueContainer as HTMLInputElement).checked = this.value;
-                      } else if (this.type === 'dropdown-list' && (this.valuesList !== null && Array.isArray(this.valuesList))) {
-                            valueContainer = document.createElement('select');
+                              // устанавливаем чекбокс в стостояние согласно состоянию в свойстве экземпляра
+                              (valueContainer as HTMLInputElement).checked = Boolean(this.value);
+                        } else if (this.type === 'dropdown-list' && (this.valuesList !== null && Array.isArray(this.valuesList))) {
+                              valueContainer = document.createElement('select');
 
 
-                            for(let option of this.valuesList) {
-                              let optionContainer = document.createElement('option');
-                              optionContainer.innerText = `${option}`;
-                              
-                              // А если будут разного типа значенгия из списка значений и выбранного значения?
-                              // По хорошему надо бы более кардианльно разделить эти типы элементов в свои классы
-                              if(option === this.value) {
-                                    optionContainer.setAttribute('selected', '');
+                              for (let option of this.valuesList) {
+                                    let optionContainer = document.createElement('option');
+                                    optionContainer.innerText = `${option}`;
+
+                                    // А если будут разного типа значенгия из списка значений и выбранного значения?
+                                    // По хорошему надо бы более кардианльно разделить эти типы элементов в свои классы
+                                    if (option === this.value) {
+                                          optionContainer.setAttribute('selected', '');
+                                    }
+
+                                    valueContainer.appendChild(optionContainer);
                               }
+                        }
 
-                              valueContainer.appendChild(optionContainer);
-                            }
-                      }
+                        // навешиываем обработчик события, чтобы вносить изменения в настройки по клику на чекбокс
+                        if (valueContainer) {
+                              valueContainer.addEventListener('change', event => {
+                                    if (this.type == 'checkbox') this.value = (event.target as HTMLInputElement).checked;
+                                    if (this.type == 'dropdown-list') this.value = (valueContainer as HTMLSelectElement).value;
 
-                      // навешиываем обработчик события, чтобы вносить изменения в настройки по клику на чекбокс
-                      if (valueContainer) {
-                            valueContainer.addEventListener('change', event => {
-                                      if(this.type == 'checkbox') this.value = (event.target as HTMLInputElement).checked;
-                                      if(this.type == 'dropdown-list') this.value = (valueContainer as HTMLSelectElement).value;
-
-                                      localStorage.setItem(this.settingsKey, JSON.stringify(this.value));
-                            });
-                      }
-                }
-          }
+                                    localStorage.setItem(this.settingsKey, JSON.stringify(this.value));
+                              });
+                        }
+                  }
+            }
 
 
-          if(valueContainer) {
-                labelElement.appendChild(valueContainer);
-          }
+            if (valueContainer) {
+                  labelElement.appendChild(valueContainer);
+            }
 
-          return labelElement;
-    }
+            return labelElement;
+      }
 
     updateValue(newValue: string | boolean | number) {
           this.value = newValue;
