@@ -36,6 +36,23 @@ export default class UI {
                   settingsKey: 'renderGrid',
             });
 
+            const lineStyle = new UIElement({
+                  type: 'dropdown-list',
+                  label: 'Line style',
+                  classNames: ['app-ui__dropdown-list'],
+                  valuesList: ['solid', 'dashed', 'dots'],
+                  value: 'solid',
+                  settingsKey: 'lineStyle',
+            });
+
+            const renderLinePointer = new UIElement({
+                  type: 'checkbox',
+                  label: 'Render pointer',
+                  classNames: [],
+                  value: true,
+                  settingsKey: 'renderLinePointer',
+            });
+
             const mouseTarget = new UIElement({
                   type: 'text',
                   label: 'Mouse target',
@@ -50,6 +67,8 @@ export default class UI {
             // записываем их в экземляр класса
             this.elements = {
                   renderGrid,
+                  renderLinePointer,
+                  lineStyle,
                   mouseTarget,
             };
 
@@ -60,6 +79,8 @@ export default class UI {
             // добавляем в внутреннией контейнер панели
             containerInner.appendChild(title);
             containerInner.appendChild(this.elements.renderGrid.body);
+            containerInner.appendChild(this.elements.renderLinePointer.body)
+            containerInner.appendChild(this.elements.lineStyle.body);
             containerInner.appendChild(this.elements.mouseTarget.body);
 
             // добавляем внутренности в контейнер UI

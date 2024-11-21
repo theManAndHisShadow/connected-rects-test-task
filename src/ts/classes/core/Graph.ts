@@ -18,9 +18,18 @@ interface GraphConstructorParams {
     
 }
 
+interface QueueItem {
+    node: GraphNodeType;
+    path: GraphNodeType[];
+    distance: number;
+    turns: number;
+    direction: string | null;
+}
+
 export default class Graph {
     parent: ConnectionLine;
     nodes: GraphNodesMap;
+    lastPathData: QueueItem | null;
     style: GraphStyle;
     /**
      * 
@@ -41,6 +50,7 @@ export default class Graph {
         
         let rawPoints = this.generateSimpleGridPoints();
         this.nodes = this.createGraphFrom(rawPoints);
+        this.lastPathData = null;
 
         this.style = {
             graphNodeRadius: params.graphNodeRadius,
@@ -58,6 +68,7 @@ export default class Graph {
      * @returns массив узлов ортогональной сетки
      */
     private generateSimpleGridPoints() {
+        // Возвращает позиции точек внешнего прямоугольника (прямоугольник + margin)
         const getOuterRectPoints = (rect: Rectangle, originPoint: Point) => {
             const { x, y } = originPoint;
             const { width, height } = rect.size;
@@ -78,20 +89,23 @@ export default class Graph {
             };
         };
     
+        // возвращает вертикальную линию по заданному иксу
         const generateVerticalLine = (x: number, yValues: number[]) => 
             yValues.map(y => ({ x, y }));
     
+        // возвращает горизонтальную лини по заданному игреку
         const generateHorizontalLine = (y: number, xValues: number[]) => 
             xValues.map(x => ({ x, y }));
     
-        const points = [];
+        const rawPoints = [];
         const startPort = this.parent.endPoints[0];
         const endPort = this.parent.endPoints[1];
     
+        // Создаём 4 набора точек для: 2 фигур и 2 зеракльных проекций
         const startPortOuterRectPoints = getOuterRectPoints(startPort.parent, startPort.parent.position);
-        const startPortMirrorPoints = getOuterRectPoints(startPort.parent, { x: startPort.parent.position.x, y: endPort.parent.position.y });
-        const endPortOuterRectPoints = getOuterRectPoints(endPort.parent, endPort.parent.position);
-        const endPortMirrorPoints = getOuterRectPoints(endPort.parent, { x: endPort.parent.position.x, y: startPort.parent.position.y });
+        const startPortMirrorPoints    = getOuterRectPoints(startPort.parent, { x: startPort.parent.position.x, y: endPort.parent.position.y });
+        const endPortOuterRectPoints   = getOuterRectPoints(endPort.parent, endPort.parent.position);
+        const endPortMirrorPoints      = getOuterRectPoints(endPort.parent, { x: endPort.parent.position.x, y: startPort.parent.position.y });
     
         const startCenter = startPortOuterRectPoints.centerPoint;
         const endCenter = endPortOuterRectPoints.centerPoint;
@@ -128,24 +142,32 @@ export default class Graph {
         delete startPortOuterRectPoints.centerPoint;
         delete endPortOuterRectPoints.centerPoint;
     
-        points.push(...Object.values(startPortOuterRectPoints));
-        points.push(...Object.values(startPortMirrorPoints));
-        points.push(...Object.values(endPortOuterRectPoints));
-        points.push(...Object.values(endPortMirrorPoints));
-        points.push(...graphPoints);
-    
-        return points.filter(point => {
-            //
+        // добавляем все найденные точки в общий массив;
+        rawPoints.push(...Object.values(startPortOuterRectPoints));
+        rawPoints.push(...Object.values(startPortMirrorPoints));
+        rawPoints.push(...Object.values(endPortOuterRectPoints));
+        rawPoints.push(...Object.values(endPortMirrorPoints));
+        rawPoints.push(...graphPoints);
+
+        const filtredPoints = rawPoints.filter(point => {
+            // Исключаем все точки, которые оказываются во время движения в зоне фигуры + отступа
             let insideRect1 = isPointInsideRectangle(point, startPort.parent, startPort.parent.style.margin - 1);
             let insideRect2 = isPointInsideRectangle(point, endPort.parent, endPort.parent.style.margin - 1);
             
+            // Если проверка пройдена - добавляем точку в отфильтрованный массив
             if(!insideRect1 && !insideRect2) return point;
-        }).sort((a, b) => {
+        });
+
+        // Финальный штрих - сортируем точки и по иксу и по игреку
+        filtredPoints.sort((a, b) => {
             if (a.x === b.x) {
                 return a.y - b.y; 
             }
             return a.x - b.x; 
-        });;
+        });
+    
+
+        return filtredPoints;
     }
 
 
@@ -176,10 +198,6 @@ export default class Graph {
     
         // локальная вспомогательная функция, для получения адреса точки (не узла!)
         const getAddress = (point: Point) => `${point.x},${point.y}`;
-    
-        // Порты обоих прямоугольников
-        const portsLocationsOfRect1: Point[] = rect1.ports.getAll().map(port => port.connectionPoint.point);
-        const portsLocationsOfRect2: Point[] = rect2.ports.getAll().map(port => port.connectionPoint.point);
     
         // определяем локакьную вспомогательную функцию
         // Проверяем, разрешена ли связь между двумя точками
@@ -349,8 +367,9 @@ export default class Graph {
                 // Если адрес текущей точки совпадает полностью с адресом конечной 
                 // то возвращаем текущий путь, проделанной текущей точкой (последней на момент срабатывания условия)
 
-                console.log('Найден путь:', path);
-                console.log('Оставшиеся альтернативные пути:', queue);
+                // записываем последний успешный путь
+                this.lastPathData = current;
+                
                 return path;
             }
     

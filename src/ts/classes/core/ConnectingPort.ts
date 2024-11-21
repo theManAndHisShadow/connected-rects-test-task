@@ -12,6 +12,7 @@ export default class ConnectionPort extends SynteticEventTarget{
     isBusy: boolean;
     endPoint: null | ConnectionPort;
     connection: ConnectionLine | null; 
+    role: "master" | "slave" | null;
 
     constructor(params: { letter: string, x: number, y: number, r: number, parent: RectangleShape, angle: number}) {
         super();
@@ -36,6 +37,9 @@ export default class ConnectionPort extends SynteticEventTarget{
             borderColor: 'rgba(255, 255, 255, 0.2',
             borderThickness: 0,
         }
+
+        // роль пока что устанавливаем на null
+        this.role = null;
     }
 
     connectTo(endPoint: ConnectionPort): void{
@@ -46,8 +50,12 @@ export default class ConnectionPort extends SynteticEventTarget{
         this.isBusy = true;
         endPoint.isBusy = true;
 
+        // Устанавливаем роли, от кого кому идёт связь
+        this.role = "master";
+        endPoint.role = "slave";
 
-        this.connection = new ConnectionLine(this, this.endPoint);
+
+        this.connection = new ConnectionLine(this, this.endPoint, 'rgba(255, 255, 255, 0.5)');
         this.endPoint.connection = this.connection;
     }
 
@@ -55,7 +63,7 @@ export default class ConnectionPort extends SynteticEventTarget{
     // Если есть необхоимость перерисовать соединение
     // Новое соедниение учитывает новое состояние внешней среды (новые координаты прямоугольника и порта) и создаёт новый оптимальный путь
     reconnect(){
-        this.connection = new ConnectionLine(this, this.endPoint);
+        this.connection = new ConnectionLine(this, this.endPoint, 'rgba(255, 255, 255, 0.5)');
         this.endPoint.connection = this.connection;
     }
 
