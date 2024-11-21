@@ -143,6 +143,7 @@ canvas.foreground.children.forEach(shape => {
                 parent: port.parent.id,
                 isBusy: port.isBusy,
                 endPoint: port.isBusy === true ? port.endPoint.parent.id : null,
+                role: port.isBusy === true ? port.role : null,
             }));
         });
 
