@@ -2,7 +2,7 @@ import ConnectionLine from "./ConnectionLine";
 import RectangleShape from "./Rectangle";
 import SynteticEventTarget from "./SynteticEventTarget";
 
-export default class ConnectionPort extends SynteticEventTarget{
+export default class Port extends SynteticEventTarget{
     connectionPoint: ConnectionPoint;
     style: Style;
     r: number;
@@ -10,7 +10,7 @@ export default class ConnectionPort extends SynteticEventTarget{
     parent: RectangleShape;
     letter: string;
     isBusy: boolean;
-    endPoint: null | ConnectionPort;
+    endPoint: null | Port;
     connection: ConnectionLine | null; 
     role: "master" | "slave" | null;
 
@@ -42,7 +42,7 @@ export default class ConnectionPort extends SynteticEventTarget{
         this.role = null;
     }
 
-    connectTo(endPoint: ConnectionPort): void{
+    connectTo(endPoint: Port): void{
         // взаимно связываем эндопоинты
         this.endPoint = endPoint;
         endPoint.endPoint = this;

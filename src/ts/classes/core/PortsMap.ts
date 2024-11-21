@@ -1,12 +1,12 @@
-import ConnectionPort from "./ConnectingPort";
+import Port from "./Port";
 
 export default class PortsMap {
-    A: ConnectionPort;
-    B: ConnectionPort;
-    C: ConnectionPort;
-    D: ConnectionPort;
+    A: Port;
+    B: Port;
+    C: Port;
+    D: Port;
 
-    constructor({A, B, C, D}: {A: ConnectionPort, B: ConnectionPort, C: ConnectionPort, D: ConnectionPort}){
+    constructor({A, B, C, D}: {A: Port, B: Port, C: Port, D: Port}){
         this.A = A;
         this.B = B;
         this.C = C;
@@ -26,7 +26,7 @@ export default class PortsMap {
         });
     }
 
-    getAll(): ConnectionPort[] {
+    getAll(): Port[] {
         return [this.A, this.B, this.C, this.D];
     }
 }

@@ -136,7 +136,7 @@ canvas.foreground.children.forEach(shape => {
             port.style.visibility = true;
 
             ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
-                class: 'ConnectingPort',
+                class: 'Port',
                 letter: port.letter,
                 x: port.connectionPoint.point.x,
                 y: port.connectionPoint.point.y,
