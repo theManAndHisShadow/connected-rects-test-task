@@ -42,7 +42,7 @@ export default class ConnectionLine {
      * @param context - Контекст, где происходит отрисовка
      * @param dashed - Должна ли линия быть пунктирной
      */
-    private renderConnecterSegmentAt(context: CanvasRenderingContext2D, dashed: boolean, renderPointer: boolean) {
+    private renderConnecterSegmentAt(context: CanvasRenderingContext2D, lineStyle: "solid" | "dashed" | "dots", renderPointer: boolean) {
         // если по какой-то причине порт недействителен - прервать выполнение
         if (!this.endPoints[0] || !this.endPoints[1]) {
             console.error('Один из портов пустой! Массив текущих значений: ', this.endPoints);
@@ -91,10 +91,12 @@ export default class ConnectionLine {
 
         // отрисовываем в цикле от start до end пар
         points.forEach(([start, end]) => {
-            if(dashed) {
+            if(lineStyle === "dashed") {
                 context.setLineDash([5, 5]);
                 context.lineDashOffset = 5;
             }
+            
+            if(lineStyle == "dots") context.setLineDash([2, 2]);
 
             context.beginPath();
             context.moveTo(start.x, start.y);
@@ -102,7 +104,7 @@ export default class ConnectionLine {
             context.stroke();
             context.closePath();
 
-            if(dashed) context.setLineDash([]);
+            if(lineStyle === "solid" || lineStyle === "dashed" || lineStyle === "dots") context.setLineDash([]);
         });
 
         // устанавливаем пары "буква порта - направление указателя"
@@ -146,14 +148,15 @@ export default class ConnectionLine {
      * @param context - Куда орисовать линию.
      * @param dashed - Должна ли линия быть пунктирной
      */
-    private renderSegmentsAt(context: CanvasRenderingContext2D, dashed: boolean) {
+    private renderSegmentsAt(context: CanvasRenderingContext2D, lineStyle: "solid" | "dashed" | "dots") {
         let segmentNotStarted = true;
 
         context.strokeStyle = this.color;
         context.lineWidth = 1;
         context.beginPath();
 
-        if(dashed) context.setLineDash([5, 5]);
+        if(lineStyle === "dashed") context.setLineDash([5, 5]);
+        if(lineStyle == "dots") context.setLineDash([2, 2]);
 
         for (let i = 0; i < this.points.length; i++) {
             let point = this.points[i];
@@ -170,7 +173,7 @@ export default class ConnectionLine {
         context.stroke();
         context.closePath();
 
-        if(dashed)  context.setLineDash([]);
+        if(lineStyle === "dashed" || lineStyle === "dots")  context.setLineDash([]);
     }
     
 
@@ -183,12 +186,12 @@ export default class ConnectionLine {
         // получаем данные по параметрам отрисовки
         const renderGrid = JSON.parse(localStorage.getItem('renderGrid'));
         const renderPointer = JSON.parse(localStorage.getItem('renderLinePointer'));
-        const useDashedLine = JSON.parse(localStorage.getItem('useDashedLine'));
+        const lineStyle = JSON.parse(localStorage.getItem('lineStyle'));
 
         // отрисовываем сначала сегменты пути
-        this.renderSegmentsAt(context, useDashedLine);
+        this.renderSegmentsAt(context, lineStyle);
 
-        this.renderConnecterSegmentAt(context, useDashedLine, renderPointer);
+        this.renderConnecterSegmentAt(context, lineStyle, renderPointer);
         
         // если в панели справа стоит галочка 
         if(renderGrid) {
