@@ -68,18 +68,18 @@ export default class Port extends SynteticEventTarget{
     }
 
     renderAt(context: CanvasRenderingContext2D): void {
-        if(this.connection !== null) {
+        if (this.connection !== null) {
             this.connection.renderAt(context);
         }
 
-       if(this.style.visibility) {
+        if (this.style.visibility) {
             context.beginPath();
             context.arc(this.connectionPoint.point.x, this.connectionPoint.point.y, this.r, 0, 2 * Math.PI, false);
-            context.fillStyle = this.isBusy ? 'rgba(125, 125, 125, 0.3)' : this.parent.style.fillColor;
-            context.strokeStyle = this.isBusy ? 'rgba(155, 155, 155, 0.4)' : this.parent.style.borderColor;
+            context.fillStyle = this.isBusy ? 'green' : 'rgba(125, 125, 125, 1)';
+            context.strokeStyle = this.isBusy ? 'green' : 'rgba(155, 155, 155, 1)';
             context.fill();
             context.stroke();
             context.closePath();
-       }
+        }
     }
 }
