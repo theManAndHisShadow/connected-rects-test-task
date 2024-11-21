@@ -42,7 +42,7 @@ export default class ConnectionLine {
      * @param context - Контекст, где происходит отрисовка
      * @param dashed - Должна ли линия быть пунктирной
      */
-    private renderConnecterSegmentAt(context: CanvasRenderingContext2D, dashed: boolean) {
+    private renderConnecterSegmentAt(context: CanvasRenderingContext2D, dashed: boolean, renderPointer: boolean) {
         // если по какой-то причине порт недействителен - прервать выполнение
         if (!this.endPoints[0] || !this.endPoints[1]) {
             console.error('Один из портов пустой! Массив текущих значений: ', this.endPoints);
@@ -113,25 +113,27 @@ export default class ConnectionLine {
             D: 'up',
         }
 
-        // обходим все порты
-        for(let port of this.endPoints) {
-            // если порт нужного типа
-            if(port.role == 'slave') {
-                // рисуем указатель-треугольник ниже
+        if(renderPointer) {
+            // обходим все порты
+            for(let port of this.endPoints) {
+                // если порт нужного типа
+                if(port.role == 'slave') {
+                    // рисуем указатель-треугольник ниже
 
-                // Позиция точки на середине грани фигуры
-                let position = getPoints(port)[1];
+                    // Позиция точки на середине грани фигуры
+                    let position = getPoints(port)[1];
 
-                drawTriangle(
-                    context, 
-                    position.x, 
-                    position.y, 
-                    8, 
-                    8, 
-                    pointerDirection[port.letter], 
-                    this.color, 
-                    this.color
-                );
+                    drawTriangle(
+                        context, 
+                        position.x, 
+                        position.y, 
+                        8, 
+                        8, 
+                        pointerDirection[port.letter], 
+                        this.color, 
+                        this.color
+                    );
+                }
             }
         }
     }
@@ -179,13 +181,14 @@ export default class ConnectionLine {
     */
    renderAt(context: CanvasRenderingContext2D) {
         // получаем данные по параметрам отрисовки
+        const renderGrid = JSON.parse(localStorage.getItem('renderGrid'));
+        const renderPointer = JSON.parse(localStorage.getItem('renderLinePointer'));
         const useDashedLine = JSON.parse(localStorage.getItem('useDashedLine'));
-        const renderGrid = JSON.parse(localStorage.getItem('renderGrid'))
 
         // отрисовываем сначала сегменты пути
         this.renderSegmentsAt(context, useDashedLine);
 
-        this.renderConnecterSegmentAt(context, useDashedLine);
+        this.renderConnecterSegmentAt(context, useDashedLine, renderPointer);
         
         // если в панели справа стоит галочка 
         if(renderGrid) {
