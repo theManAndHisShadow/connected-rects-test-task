@@ -105,6 +105,16 @@ body {
     transition: 0.3s ease-out;
 }
 
+.app-ui__dropdown-list select {
+    background: #111111;
+    color: white;
+    padding: 2px;
+    border-radius: 4px;
+    border: 1px solid #2c2c2c;
+    cursor: pointer;
+}
+
+
 .json2html-pair > *, .json2html-complex-pair > * {
     font-size: 13px !important;
 }
