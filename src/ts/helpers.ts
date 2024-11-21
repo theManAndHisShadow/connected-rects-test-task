@@ -193,3 +193,58 @@ export function groupPointsBy(positionComponent: 'x' | 'y', points: Point[]): Po
     // Возвращаем массив массивов сгруппированных точек
     return Object.values(groups);
 }
+
+
+
+/**
+ * Рисует треугольник с заданной вершиной, высотой и шириной основания.
+ * @param context - Контекст для рисования
+ * @param peakX - X-координата вершины треугольника
+ * @param peakY - Y-координата вершины треугольника
+ * @param h - Высота треугольника
+ * @param b - Ширина основания треугольника
+ * @param peak - Направление вершины ("up", "down", "left", "right")
+ */
+export function drawTriangle(
+    context: CanvasRenderingContext2D,
+    peakX: number,
+    peakY: number,
+    h: number,
+    b: number,
+    peak: "up" | "down" | "left" | "right",
+    fillColor: string,
+    borderColor: string,
+) {
+
+    context.fillStyle = fillColor;
+    context.strokeStyle = borderColor;
+    context.beginPath();
+
+    // Рассчитываем координаты трёх вершин треугольника в зависимости от направления
+    switch (peak) {
+        case "up":
+            context.moveTo(peakX, peakY);
+            context.lineTo(peakX - b / 2, peakY + h); 
+            context.lineTo(peakX + b / 2, peakY + h); 
+            break;
+        case "down":
+            context.moveTo(peakX, peakY); 
+            context.lineTo(peakX - b / 2, peakY - h); 
+            context.lineTo(peakX + b / 2, peakY - h); 
+            break;
+        case "left":
+            context.moveTo(peakX, peakY); 
+            context.lineTo(peakX + h, peakY - b / 2); 
+            context.lineTo(peakX + h, peakY + b / 2); 
+            break;
+        case "right":
+            context.moveTo(peakX, peakY); 
+            context.lineTo(peakX - h, peakY - b / 2); 
+            context.lineTo(peakX - h, peakY + b / 2); 
+            break;
+    }
+
+    context.closePath();
+    context.stroke();
+    context.fill();  
+}
