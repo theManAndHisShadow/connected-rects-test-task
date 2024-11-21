@@ -1,3 +1,4 @@
+import { drawTriangle } from "../../helpers";
 import ConnectionPort from "./ConnectingPort";
 import Graph from "./Graph";
 
@@ -103,6 +104,26 @@ export default class ConnectionLine {
 
             if(dashed) context.setLineDash([]);
         });
+
+        // устанавливаем пары "буква порта - направление указателя"
+        const pointerDirection: Record<string, "right" | "down" | "left" | "up"> = {
+            A: 'right',
+            B: 'down',
+            C: 'left',
+            D: 'up',
+        }
+
+        // рисуем указатель-треугольник
+        drawTriangle(
+            context, 
+            points[1][1].x, 
+            points[1][1].y, 
+            8, 
+            8, 
+            pointerDirection[this.endPoints[1].letter], 
+            this.color, 
+            this.color
+        );
     }
 
 
