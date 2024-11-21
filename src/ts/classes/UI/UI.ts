@@ -36,12 +36,13 @@ export default class UI {
                   settingsKey: 'renderGrid',
             });
 
-            const useDashedLine = new UIElement({
-                  type: 'checkbox',
-                  label: 'Use dashed line',
-                  classNames: [],
-                  value: false,
-                  settingsKey: 'useDashedLine',
+            const lineStyle = new UIElement({
+                  type: 'dropdown-list',
+                  label: 'Line style',
+                  classNames: ['app-ui__dropdown-list'],
+                  valuesList: ['solid', 'dashed', 'dots'],
+                  value: 'solid',
+                  settingsKey: 'lineStyle',
             });
 
             const renderLinePointer = new UIElement({
@@ -67,7 +68,7 @@ export default class UI {
             this.elements = {
                   renderGrid,
                   renderLinePointer,
-                  useDashedLine,
+                  lineStyle,
                   mouseTarget,
             };
 
@@ -79,7 +80,7 @@ export default class UI {
             containerInner.appendChild(title);
             containerInner.appendChild(this.elements.renderGrid.body);
             containerInner.appendChild(this.elements.renderLinePointer.body)
-            containerInner.appendChild(this.elements.useDashedLine.body);
+            containerInner.appendChild(this.elements.lineStyle.body);
             containerInner.appendChild(this.elements.mouseTarget.body);
 
             // добавляем внутренности в контейнер UI
