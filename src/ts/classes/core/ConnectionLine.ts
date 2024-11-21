@@ -113,17 +113,27 @@ export default class ConnectionLine {
             D: 'up',
         }
 
-        // рисуем указатель-треугольник
-        drawTriangle(
-            context, 
-            points[1][1].x, 
-            points[1][1].y, 
-            8, 
-            8, 
-            pointerDirection[this.endPoints[1].letter], 
-            this.color, 
-            this.color
-        );
+        // обходим все порты
+        for(let port of this.endPoints) {
+            // если порт нужного типа
+            if(port.role == 'slave') {
+                // рисуем указатель-треугольник ниже
+
+                // Позиция точки на середине грани фигуры
+                let position = getPoints(port)[1];
+
+                drawTriangle(
+                    context, 
+                    position.x, 
+                    position.y, 
+                    8, 
+                    8, 
+                    pointerDirection[port.letter], 
+                    this.color, 
+                    this.color
+                );
+            }
+        }
     }
 
 
