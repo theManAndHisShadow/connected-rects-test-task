@@ -1,32 +1,65 @@
 import Port from "./Port";
 
 export default class PortsMap {
-    A: Port;
-    B: Port;
-    C: Port;
-    D: Port;
+    private ports: Map<string, Port>;
 
-    constructor({A, B, C, D}: {A: Port, B: Port, C: Port, D: Port}){
-        this.A = A;
-        this.B = B;
-        this.C = C;
-        this.D = D;
+    constructor(ports: { [key: string]: Port }){
+        this.ports = new Map(Object.entries(ports));
     }
 
-    moveAll(dx: number, dy: number){
-        const targets = [this.A, this.B, this.C, this.D];
 
-        targets.forEach(port => {
+
+    /**
+     * Позволяет переместить сразу все порты.
+     * @param dx - смещение по иксу
+     * @param dy - смещение по игреку
+     */
+    moveAll(dx: number, dy: number){
+        const ports = this.getAll();
+
+        ports.forEach(port => {
             port.connectionPoint.point.x += dx;
             port.connectionPoint.point.y += dy;
-
-           if(port.isBusy) {
-                port.reconnect();
-           }
         });
+
+        ports.filter(port => port.isBusy).forEach(port => port.reconnect());
     }
 
+
+
+    /**
+     * Возвращает порт с указанной буквой
+     * @param name - Буква порта
+     * @returns - порт, принадлежащий к фигуре
+     */
+    getPort(name: string): Port | undefined {
+        return this.ports.get(name);
+    }
+
+
+
+    /**
+     * Возвращает массив всех портов данной фигуры
+     * @returns 
+     */
     getAll(): Port[] {
-        return [this.A, this.B, this.C, this.D];
+        return Array.from(this.ports.values());
+    }
+
+
+
+    /**
+     * Скрывает все порты данной фигуры разом
+     */
+    hideAll() {
+        this.getAll().forEach(port => port.style.visibility = false);
+    }
+
+
+    /**
+     * Возвращает видимость всех портов данной фигуры разом
+     */
+    showAll() {
+        this.getAll().forEach(port => port.style.visibility = true);
     }
 }
