@@ -248,3 +248,26 @@ export function drawTriangle(
     context.stroke();
     context.fill();  
 }
+
+
+
+/**
+ * Рисует окружность с заливокй и границей
+ * @param context - Контекст, где требуется отрисовка
+ * @param cx - икс позиция центра
+ * @param cy - игрек позиция центра
+ * @param r - радиус окружности
+ * @param fillColor - цвет заливки
+ * @param borderColor - цвет границы
+ * @param borderThickness - толщина границы
+ */
+export function drawCircle(context: CanvasRenderingContext2D, cx: number, cy: number, r: number, fillColor: string, borderColor: string, borderThickness: number){
+    context.beginPath();
+    context.arc(cx, cy, r, 0, 2 * Math.PI, false);
+    context.lineWidth = borderThickness;
+    context.fillStyle = fillColor;
+    context.strokeStyle = borderColor;
+    context.fill();
+    context.stroke();
+    context.closePath();
+}

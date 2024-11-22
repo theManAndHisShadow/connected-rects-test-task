@@ -65,7 +65,7 @@ export default class InteractiveCanvas {
 
 
                 for(let child of this.foreground.children) {
-                    let ports = Object.values(child.ports);
+                    let ports = child.ports.getAll();
                     
                     // события портов
                     for(let port of ports) {
@@ -158,7 +158,7 @@ export default class InteractiveCanvas {
 
                 // отдельно события портов
                 for(let child of this.foreground.children) {
-                    let ports = Object.values(child.ports);
+                    let ports = child.ports.getAll();
                     
                     for(let port of ports) {
                         let center =  port.connectionPoint.point;

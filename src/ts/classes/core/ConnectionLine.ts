@@ -1,9 +1,9 @@
 import { drawTriangle } from "../../helpers";
-import ConnectionPort from "./ConnectingPort";
+import Port from "./Port";
 import Graph from "./Graph";
 
 export default class ConnectionLine {
-    endPoints: ConnectionPort[];
+    endPoints: Port[];
     points: Point[];
     graph: Graph;
     color: string;
@@ -13,7 +13,7 @@ export default class ConnectionLine {
      * Хранит начало и конец линии и промежуточные точки.
      * Так же хранит вспомогательный "граф" c узлами, на основе которых и строится линия.
      */
-    constructor(startPort: ConnectionPort, endPort: ConnectionPort, color: string) {
+    constructor(startPort: Port, endPort: Port, color: string) {
         this.endPoints = [startPort, endPort];
 
         // Создаём эземпляр класса "граф" для данной линии (соединения)
@@ -55,7 +55,7 @@ export default class ConnectionLine {
         context.lineWidth = 1;
 
         // Получить точки откуда до куда нужна отрисовка
-        const getPoints = (port: ConnectionPort) => {
+        const getPoints = (port: Port) => {
             // Первая точка - всегда порт
             const points: Point[] = [port.connectionPoint.point];
             const rect = port.parent;
@@ -79,7 +79,7 @@ export default class ConnectionLine {
             } else if(port.letter === 'D') {
                 points.push({
                     x: rect.position.x + (rect.size.width / 2),
-                    y: rect.position.y + 1,
+                    y: rect.position.y + rect.size.height + 1,
                 });
             }
 
@@ -101,6 +101,7 @@ export default class ConnectionLine {
             context.beginPath();
             context.moveTo(start.x, start.y);
             context.lineTo(end.x, end.y);
+            context.moveTo(start.x, start.y);
             context.stroke();
             context.closePath();
 
@@ -191,6 +192,7 @@ export default class ConnectionLine {
         // отрисовываем сначала сегменты пути
         this.renderSegmentsAt(context, lineStyle);
 
+        //
         this.renderConnecterSegmentAt(context, lineStyle, renderPointer);
         
         // если в панели справа стоит галочка 
