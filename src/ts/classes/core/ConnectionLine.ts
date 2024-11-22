@@ -79,7 +79,7 @@ export default class ConnectionLine {
             } else if(port.letter === 'D') {
                 points.push({
                     x: rect.position.x + (rect.size.width / 2),
-                    y: rect.position.y + 1,
+                    y: rect.position.y + rect.size.height + 1,
                 });
             }
 
@@ -101,6 +101,7 @@ export default class ConnectionLine {
             context.beginPath();
             context.moveTo(start.x, start.y);
             context.lineTo(end.x, end.y);
+            context.moveTo(start.x, start.y);
             context.stroke();
             context.closePath();
 
@@ -191,6 +192,7 @@ export default class ConnectionLine {
         // отрисовываем сначала сегменты пути
         this.renderSegmentsAt(context, lineStyle);
 
+        //
         this.renderConnecterSegmentAt(context, lineStyle, renderPointer);
         
         // если в панели справа стоит галочка 
