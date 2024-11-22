@@ -1,6 +1,7 @@
 import { drawGrid, getColor } from "./helpers";
 import InteractiveCanvas from "./classes/core/InteractiveCanvas";
 import RectangleShape from "./classes/core/Rectangle";
+import Port from "./classes/core/Port";
 import UI from "./classes/UI/UI";
 
 // external lib for data visualization
@@ -53,7 +54,7 @@ canvas.foreground.appendChild(rect1);
 canvas.foreground.appendChild(rect2);
 
 // testing main feature
-rect1.ports.C.connectTo(rect2.ports.B);
+rect1.ports.getPort('C').connectTo(rect2.ports.getPort('B'));
 
 // rendering background and grid once for better performance
 canvas.background.fill(getColor('carbon'));
@@ -130,38 +131,78 @@ canvas.foreground.children.forEach(shape => {
         }));
     });
 
-    Object.values(shape.ports).forEach(port => {
+    // Добавляем обработчик событий мыши для каддого порта
+    shape.ports.getAll().forEach(port => {
+        // Обрабатываем событие "мышь оказалась над портом"
         port.addEventListener('mouseover', () => {
-            canvas.foreground.body.style.cursor = "pointer";
-            port.style.visibility = true;
+            // Показываем курсор "поинтер" и информацию о порте если: 
+            // - у фигуры нет соединений
+            // - или показываем если это активный порт с соединением
+            if(!shape.hasConnection() || port.isBusy) {
+                canvas.foreground.body.style.cursor = "pointer";
+                port.style.visibility = true;
 
-            ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
-                class: 'Port',
-                letter: port.letter,
-                x: port.connectionPoint.point.x,
-                y: port.connectionPoint.point.y,
-                parent: port.parent.id,
-                isBusy: port.isBusy,
-                endPoint: port.isBusy === true ? port.endPoint.parent.id : null,
-                role: port.isBusy === true ? port.role : null,
-            }));
+                // Выводим информацию о текущем порте в панель справа
+                ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
+                    class: 'Port',
+                    letter: port.letter,
+                    x: port.connectionPoint.point.x,
+                    y: port.connectionPoint.point.y,
+                    parent: port.parent.id,
+                    isBusy: port.isBusy,
+                    endPoint: port.isBusy === true ? port.endPoint.parent.id : null,
+                    role: port.isBusy === true ? port.role : null,
+                }));
+            }
         });
 
+        // Событие наведения мыши в сторону порта (там своя широкая зона где будет сработано событие)
         port.addEventListener('hoveron', () => {
-            port.style.visibility = true;
+            // Показать порт если у фигуры есть соединение и этот порт и есть активный порт.
+            // Это в свою очередь "приглашает" пользователя провзаимодействовать с портом
+            if(shape.hasConnection() && port.isBusy) port.style.visibility = true;
         });
 
+        // Событие когдла мышь покидает окрестности порта
         port.addEventListener('hoveroff', () => {
-            port.style.visibility = false;
+            // Скрываем если так же фигура имеет соединение и порт в окрестностях которого была мышь - активен
+            if(shape.hasConnection() && port.isBusy) port.style.visibility = false;
         });
 
+        // Событие "мышь покинула непосредственно порт"
         port.addEventListener('mouseout', () => {
-            canvas.foreground.body.style.cursor = "initial";
-            ui.elements.mouseTarget.resetValue();
+            // Показываем курсор "изначальный"
+            // - у фигуры нет соединений
+            // - или показываем если это активный порт с соединением
+            if(!shape.hasConnection() || port.isBusy) {
+                canvas.foreground.body.style.cursor = "initial";
+                ui.elements.mouseTarget.resetValue(); // скрываем информацию о порте в панели справа
+            }
         });
 
+        // Событие клика на порт
         port.addEventListener('click', () => {
-            console.log('current selected port:', port);
+            // В зависимости от текущего состояния порта, клик вызовет либо подключение к порту, либо отключение от него
+            if (port.isBusy) {
+                // При отключении метод возвращает объект порта, с котором было соединение
+                // запоминаем ID фигуры, с которой было ранее соединение
+                port.parent.lastConnectionWith = port.disconnect().parent.id;
+
+                // Показываем все порты фигуры, от порта которого мы отключились (то есть в чьих окрестностях кликнули)
+                // Таким образом мы как бы "приглашаем" переподключиться в соседние порты или обратно к этому же
+                shape.ports.showAll();
+            } else if (!shape.hasConnection() && !port.isBusy && port.parent.lastConnectionWith) {
+                // При повторном клике или клике к порту без соединения 
+                // находим порт, который ожидает соединения и остался в открытом виде
+                let shapeWithOpenPort = canvas.foreground.children.find(otherShape => otherShape.id === port.parent.lastConnectionWith);
+                let openPort = shapeWithOpenPort.ports.getAll().find(otherPort => otherPort.isBusy === true);
+
+                // переподключаемся к нему
+                port.connectTo(openPort);
+
+                // Скрываем все порты текущей фигуры
+                shape.ports.hideAll();
+            }
         });
     });
 
