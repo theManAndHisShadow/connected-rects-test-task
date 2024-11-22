@@ -34,8 +34,8 @@ export default class Port extends SynteticEventTarget {
 
         this.style = {
             visibility: false,
-            fillColor: 'rgba(255, 255, 255, 0.2',
-            borderColor: 'rgba(255, 255, 255, 0.2',
+            fillColor: 'rgba(25, 25, 25, 1)',
+            borderColor: 'rgba(55, 55, 55, 1)',
             borderThickness: 0,
         }
 
@@ -128,8 +128,8 @@ export default class Port extends SynteticEventTarget {
                 this.connectionPoint.point.x,
                 this.connectionPoint.point.y,
                 this.r,
-                this.isBusy ? 'rgba(0, 155, 155, 1)' : 'rgba(125, 125, 125, 1)',
-                this.isBusy ? 'white' : 'rgba(155, 155, 155, 1)', 
+                this.isBusy ? 'rgba(0, 155, 155, 1)' : this.style.fillColor,
+                this.isBusy ? 'white' : this.style.borderColor, 
                 1
             );
         }
