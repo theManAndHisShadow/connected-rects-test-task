@@ -3,6 +3,7 @@ import Port from "./Port";
 import Graph from "./Graph";
 
 export default class ConnectionLine {
+    method: 'straight line' | 'shortest path';
     endPoints: Port[];
     points: Point[];
     graph: Graph;
@@ -25,12 +26,27 @@ export default class ConnectionLine {
             graphLineThickness: 1,
         });
 
+        this.method = JSON.parse(localStorage.getItem('connectionMethod'));
+
         // Извлекаем позиции портов для связи
         const port1 = this.endPoints[0].connectionPoint.point;
         const port2 = this.endPoints[1].connectionPoint.point;
 
-        // Получаем массив точек самого короткого пути (и с самым наименьшим количеством поворотов) между 2 связанными портами
-        this.points = this.graph.findPathBetween(port1, port2);
+        let points: Point[] = [];
+
+        // На основе метода указанного в конструкторе класса будут заполнены точки пути
+        if(this.method === 'shortest path') {
+            // Точки самого короткого пути (и с самым наименьшим количеством поворотов)
+            points = this.graph.findShortestPathBetween(port1, port2)
+        } else if(this.method === 'straight line') {
+            // Просто прямая линия
+            points = this.graph.findStraightPathBetween(port1, port2);
+        } else if(this.method === 'orthogonal (elbow)') {
+            points = this.graph.findOrthogonalPathBetween(port1, port2);
+        }
+
+        // записываем точки пути
+        this.points = points;
 
         this.color = color;
     }
