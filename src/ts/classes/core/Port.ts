@@ -1,8 +1,9 @@
+import { drawCircle } from "../../helpers";
 import ConnectionLine from "./ConnectionLine";
 import RectangleShape from "./Rectangle";
 import SynteticEventTarget from "./SynteticEventTarget";
 
-export default class Port extends SynteticEventTarget{
+export default class Port extends SynteticEventTarget {
     connectionPoint: ConnectionPoint;
     style: Style;
     r: number;
@@ -42,6 +43,12 @@ export default class Port extends SynteticEventTarget{
         this.role = null;
     }
 
+
+
+    /**
+     * Связывает текущий порт с другим портом на другой фигуре.
+     * @param endPoint 
+     */
     connectTo(endPoint: Port): void{
         // взаимно связываем эндопоинты
         this.endPoint = endPoint;
@@ -54,6 +61,10 @@ export default class Port extends SynteticEventTarget{
         this.role = "master";
         endPoint.role = "slave";
 
+        // взаимно записываем ID фигры текущего порта соединения в свойства противоположно соединенных фигур
+        // Таким образом даже после отсоединения мы будем знать к какой фигуре послоедний раз была привыязана фигура текущего порта
+        this.parent.lastConnectionWith = endPoint.parent.id;
+        this.endPoint.parent.lastConnectionWith = this.parent.id;
 
         this.connection = new ConnectionLine(this, this.endPoint, 'rgba(255, 255, 255, 0.5)');
         this.endPoint.connection = this.connection;
@@ -67,19 +78,53 @@ export default class Port extends SynteticEventTarget{
         this.endPoint.connection = this.connection;
     }
 
+
+
+    /**
+     * Метод отсоединения порта. 
+     * @returns - возвращает порт, к которому была ранее привыязана, до разрыва соединения
+     */
+    disconnect(): Port{
+        // записываем ссылку на противоположный конец соединения
+        let disconnectedEnpoint = this.endPoint;
+
+        // обнуляем соединение у обоих концов
+        this.connection = null;
+        this.endPoint.connection = null;
+        
+        // обнуляем ссылки на друг друга
+        this.endPoint.endPoint = null;
+        this.endPoint = null;
+
+        // теперь этот полрт не занят и никакой роли не имеет
+        this.isBusy = false;
+        this.role = null;
+
+        // возвращаем сохранённую ссылку на порт, с которым данный был связан
+        return disconnectedEnpoint;
+    }
+
+
+
+    /**
+     * Отрисовывает порт. В случае если порт имеет активное соединегние - отрисовывает и его.
+     * @param context 
+     */
     renderAt(context: CanvasRenderingContext2D): void {
         if (this.connection !== null) {
             this.connection.renderAt(context);
         }
 
         if (this.style.visibility) {
-            context.beginPath();
-            context.arc(this.connectionPoint.point.x, this.connectionPoint.point.y, this.r, 0, 2 * Math.PI, false);
-            context.fillStyle = this.isBusy ? 'green' : 'rgba(125, 125, 125, 1)';
-            context.strokeStyle = this.isBusy ? 'green' : 'rgba(155, 155, 155, 1)';
-            context.fill();
-            context.stroke();
-            context.closePath();
+            drawCircle(
+                context,
+                this.connectionPoint.point.x,
+                this.connectionPoint.point.y,
+                this.r,
+                this.isBusy ? 'rgba(0, 155, 155, 1)' : 'rgba(125, 125, 125, 1)',
+                this.isBusy ? 'white' : 'rgba(155, 155, 155, 1)', 
+                1
+            );
         }
     }
 }
