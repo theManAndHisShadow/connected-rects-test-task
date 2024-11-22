@@ -298,7 +298,7 @@ export default class Graph {
      * @param end - Точка финиша.
      * @returns - Массив с узлами, через которых проходит путь, а если путь не найден - пустой массив.
      */
-    findPathBetween(start: Point, end: Point): GraphNodeType[] {
+    findShortestPathBetween(start: Point, end: Point): GraphNodeType[] {
         // Формат ключа для удобства обращения к узлам
         const getKey = (node: GraphNodeType) => `${node.x},${node.y}`;
     
@@ -421,6 +421,30 @@ export default class Graph {
     
         // Если путь не найден
         console.error("Путь не найден.");
+        return [];
+    }
+
+
+
+    /**
+     * Строит прямой путь между 2 точками.
+     * @param start - Точка старта
+     * @param end - Точка финиша.
+     * @returns - Массив с узлами, через которых проходит путь, а если путь не найден - пустой массив.
+     * @returns 
+     */
+    findStraightPathBetween(start: Point, end: Point): GraphNodeType[] {
+        // Находим стартовый и финишный узел
+        const startNode = this.nodes[`${start.x},${start.y}`];
+        const endNode =  this.nodes[`${end.x},${end.y}`];
+
+        return [startNode, endNode];
+    }
+
+
+
+    // временная заглушка
+    findOrthogonalPathBetween(start: Point, end: Point): GraphNodeType[] {
         return [];
     }
 
