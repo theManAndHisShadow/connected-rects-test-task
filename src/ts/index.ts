@@ -141,6 +141,7 @@ canvas.foreground.children.forEach(shape => {
             if(!shape.hasConnection() || port.isBusy) {
                 canvas.foreground.body.style.cursor = "pointer";
                 port.style.visibility = true;
+                port.style.fillColor = 'rgba(55, 55, 55, 1)'; // более светый цвет когда мышь прямо над портом
 
                 // Выводим информацию о текущем порте в панель справа
                 ui.elements.mouseTarget.replaceChild(convertObjectToHTML({
@@ -153,7 +154,7 @@ canvas.foreground.children.forEach(shape => {
                     endPoint: port.isBusy === true ? port.endPoint.parent.id : null,
                     role: port.isBusy === true ? port.role : null,
                 }));
-            }
+            } 
         });
 
         // Событие наведения мыши в сторону порта (там своя широкая зона где будет сработано событие)
@@ -176,7 +177,8 @@ canvas.foreground.children.forEach(shape => {
             // - или показываем если это активный порт с соединением
             if(!shape.hasConnection() || port.isBusy) {
                 canvas.foreground.body.style.cursor = "initial";
-                ui.elements.mouseTarget.resetValue(); // скрываем информацию о порте в панели справа
+                port.style.fillColor = 'rgba(25, 25, 25, 1)';   // при уходе мышки с порта цвет более тёмный
+                ui.elements.mouseTarget.resetValue();           // скрываем информацию о порте в панели справа
             }
         });
 
