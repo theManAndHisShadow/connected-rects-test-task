@@ -1,4 +1,4 @@
-import { isPointInsideRectangle, groupPointsBy} from "../../helpers";
+import { isPointInsideRectangle, groupPointsBy, getByStringAddress} from "../../helpers";
 import ConnectionLine from "./ConnectionLine";
 import GraphNode from "./GraphNode";
 
@@ -26,9 +26,21 @@ interface QueueItem {
     direction: string | null;
 }
 
+interface PathNewMetricsObject {
+    currentNode: GraphNodeType;
+    neighborNode: GraphNodeType;
+    newDistance: number;
+    newTurns: number,
+    newMidlineNodesCount: number;
+}
+
 export default class Graph {
     parent: ConnectionLine;
     nodes: GraphNodesMap;
+    midline: {
+        x: number;
+        y: number;
+    };
     lastPathData: QueueItem | null;
     style: GraphStyle;
     /**
@@ -47,6 +59,11 @@ export default class Graph {
      */
     constructor(params: GraphConstructorParams) {
         this.parent = params.parent;
+
+        this.midline = {
+            x: 0,
+            y: 0,
+        }
         
         let rawPoints = this.generateSimpleGridPoints();
         this.nodes = this.createGraphFrom(rawPoints);
@@ -59,7 +76,6 @@ export default class Graph {
             graphNodeColor: params.graphNodeColor
         }
     }
-
 
 
 
@@ -109,8 +125,11 @@ export default class Graph {
     
         const startCenter = startPortOuterRectPoints.centerPoint;
         const endCenter = endPortOuterRectPoints.centerPoint;
-        const centerX = (startCenter.x + endCenter.x) / 2;
-        const centerY = (startCenter.y + endCenter.y) / 2;
+        const centerX = Math.round((startCenter.x + endCenter.x) / 2);
+        const centerY = Math.round((startCenter.y + endCenter.y) / 2);
+
+        this.midline.x = centerX;
+        this.midline.y = centerY;
     
         const graphPoints = [
             // Вертикальная срединная линия
@@ -218,11 +237,16 @@ export default class Graph {
     
             // Связь разрешена, если исполнение сумело дойти до этого места
             return true; 
+    
         }
     
         // Заполняем карту узлов 'graph' узлами на основе точек, но с пустыми связями 
         points.forEach((point) => {
-            graph[`${point.x},${point.y}`] = new GraphNode(point.x, point.y, 2, 'orange');
+            if(point.x == this.midline.x || point.y == this.midline.y) {
+                graph[`${point.x},${point.y}`] = new GraphNode(point.x, point.y, 2, 'magenta', true);
+            } else {
+                graph[`${point.x},${point.y}`] = new GraphNode(point.x, point.y, 2, 'orange', false);
+            }
         });
     
         // Группируем точки по 'y'
@@ -257,11 +281,11 @@ export default class Graph {
                 // Вниз
                 if (i < rows.length - 1) {
                     const downPoint = rows[i + 1].find(p => p.x === point.x);
+
                     if (downPoint && canConnect(point, downPoint)) {
                         graph[nodeAddress].down = graph[getAddress(downPoint)];
-                    }
-                }
-    
+                    } 
+                } 
                 // Влево
                 if (j > 0) {
                     const leftPoint = row[j - 1];
@@ -286,26 +310,68 @@ export default class Graph {
 
 
 
+    /**
+     * Эвристическая функция подсчёта приблизительной стоимости маршрута (пути).
+     * @param heuristica - тип эвристики
+     * @param startNode - стартовый узел пути
+     * @param endNode - конечный узел пути
+     * @param params - метрики маршрута (пройденное расстояние, количество средтнных точек, количество поворотов).
+     * @returns - итоговую стоимость.
+     */
+    private recalcPathCostByHeuristic(heuristic: 'shortest' | 'orthogonal', startNode: GraphNodeType, endNode: GraphNodeType, params: PathNewMetricsObject): number {
+        // Перерасчёт стоимости маршрута
+        let newCost = 0;
+        let bonus = 0;
+
+        const { currentNode, neighborNode, newDistance, newTurns, newMidlineNodesCount } = params; 
+        const startLetter = this.parent.endPoints[0].letter;
+        const endLetter = this.parent.endPoints[1].letter;
+        const isTurnsToStart = getByStringAddress(currentNode) == getByStringAddress(startNode) && neighborNode.isMidlineNode;
+        const isMidlineMoving = currentNode.isMidlineNode && neighborNode.isMidlineNode;
+        const isTurnsToFinish = currentNode.isMidlineNode && getByStringAddress(neighborNode) == getByStringAddress(endNode);
+
+        if(heuristic === 'orthogonal') {
+            if (isTurnsToStart || isMidlineMoving || isTurnsToFinish) {
+                bonus = -1000;
+            } else {
+                bonus = 3000;
+            }
+    
+            if (startLetter === endLetter) {
+                newCost = newDistance + (newTurns * 100);
+            } else {
+                newCost = (newDistance + (newTurns * 10)) - (newMidlineNodesCount * 7) + bonus;
+            }
+        } else if(heuristic === 'shortest') {
+            newCost = (newDistance + (newTurns * 15));
+        }
+
+        return newCost
+    }
+
 
     /**
-     * Находит путь между 2 точками. 
-     * На данный момент самый возвращается самый короткий путь с наименьшим количеством точек.
-     * 
-     * N.B: В качестве стартовой и финишной точки разрешены лишь те точки, 
-     * координаты которых СОВПАДАЮТ с координатами узлов графа. Иначе вёрнёт пустой массив.
-     *
-     * @param start - Точка старта. 
-     * @param end - Точка финиша.
-     * @returns - Массив с узлами, через которых проходит путь, а если путь не найден - пустой массив.
+     * Находит путь между 2 точками. Координаты точек должны "найтись" в готовом графе.
+     * То есть, любые 2 произвольные точки метод связать не сможет, только узлы с аналогичными координатами.
+     * В зависимости от метода поиска пути возвращает 3 возможные варианта пути: 
+     * - прямой, 
+     * - оптимум между длиной маршрута и количеством поворотов
+     * - ортогональный путь с поворотами в середине сегмента ломанной
+     * @param start - Точка старта
+     * @param end - Точка финиша
+     * @param pathFindingMethod - метод поиска пути
+     * @returns - массив итоговый узлов для отрисовки пути
      */
-    findShortestPathBetween(start: Point, end: Point): GraphNodeType[] {
-        // Формат ключа для удобства обращения к узлам
-        const getKey = (node: GraphNodeType) => `${node.x},${node.y}`;
-    
+    findPathBetween(start: Point, end: Point, pathFindingMethod: 'straight' | 'shortest' | 'orthogonal', ): GraphNodeType[] {
         // Находим стартовый и финишный узел
         const startNode = this.nodes[`${start.x},${start.y}`];
-        const endNode =  this.nodes[`${end.x},${end.y}`];
-    
+        const endNode = this.nodes[`${end.x},${end.y}`];
+
+        // Если выбран метод полиска пути "прямой" - сразу возвращаем путь
+        if(pathFindingMethod === 'straight') {
+            return [startNode, endNode];
+        }
+
         // Если хотя бы одна из точек на входе не соответствует координатам узлов,
         // То не удастася найти узлы на таких же координатах, а значит - нет смысла в поиске.
         // Возвращаем пустой массив и выкидываем сообщение с ошибкой в консоль.
@@ -316,62 +382,66 @@ export default class Graph {
     
         // Очередь для обработки узлов
         // Изначальной очередь содержит базовый объект с ссылкой на начальный узел пути.
+        // Каждый узел может быть посещён несколько раз
         const queue: {
             node: GraphNodeType;
             path: GraphNodeType[];
             distance: number;
             turns: number;
             direction: string | null;
+            midlineNodesCount: number;
+            cost: number;
         }[] = [{
             node: startNode,
             path: [startNode],
             distance: 0,
             turns: 0,
-            direction: null, // Начального направления нет
+            direction: null,
+            cost: 0,
+            midlineNodesCount: 0,
         }];
     
-        // Отслеживаем посещённые узлы
-        // Структура Set позволит добавлять только те точки, которых ранее не было в ней.
-        const visited = new Set<string>();
+         // Ограничиваем количество поворотов для исключения ситуаций с лишними поворотами
+        const maxTurns = 4;
 
-        // Добавляем стартовую точку в список посещённых, ведь с неё всё и начинается
-        visited.add(getKey(startNode));
-    
-        // Устанавливаем противоположные направления
-        // Данная структура необходима для запрета двигаться на 180 градусов, по отношению к текущей точке очереди
+        // Для повышения гибксти поиска разрешаем посещать один и тот же узел несколько раз
+        const maxVisits = 5;
+
+        // Сколько раз каждый уцзел (адрес узла - строка) можно посетить раз (количество посещений - число)
+        const visitedCount: Record<string, number> = {};
+
+        // Объясняем методу какие направления считаются противоположными
         const oppositeDirection: Record<string, string> = {
             up: "down",
             down: "up",
             left: "right",
             right: "left",
         };
+        
     
-        // Пока в очереди есть объекты с узлами
-        // Продолжаем поиск
+        // Работаем пока в очереди есть маршруты
         while (queue.length > 0) {
-            // ОСНОВНАЯ ЛОГИКА ПОИСКА
-            // Сортируем очередь по количеству поворотов и длине пути
-            queue.sort((a, b) => a.turns - b.turns || a.distance - b.distance);
-    
+            // Сортируем по стоимости маршрута. То есть чем дешевле маршрут, тем он первее в очереди
+            queue.sort((a, b) => a.cost - b.cost);
+
             // Извлекаем наиболее оптимальный узел, то есть тот,
             // Который содержит самый корткий путь и наименьшее количество поворотов.
             // Так как сортировка распологает такие точки в самое начало (сортировка по возрастанию)
             // Можно просто достать 1 элемент очереди
             const current = queue.shift()!;
-
-            // Вытаскиываем нужные свойства
-            const { node, path, distance, turns, direction } = current;
+            const { node, path, distance, turns, direction, cost, midlineNodesCount } = current;
     
-            // Проверяем дстигли ли мы конца простым сравнением, так как адрес по сути строка из x,y
-            if (getKey(node) === getKey(endNode)) {
-                // Если адрес текущей точки совпадает полностью с адресом конечной 
-                // то возвращаем текущий путь, проделанной текущей точкой (последней на момент срабатывания условия)
-
-                // записываем последний успешный путь
+            // Если текущий узел по адресу совпал с финишным - значит мы пришли к финишу
+            if (getByStringAddress(node) === getByStringAddress(endNode)) {
+                // записываем данные всего маршрута в специальную переменную
                 this.lastPathData = current;
-                
+
+                // возвращаем только точки маршрута
                 return path;
             }
+    
+            // Пропуск кода далее если уже повернули больше, чем можно
+            if (turns > maxTurns) continue;
     
             // Если же предыдущее условие не сработало, то процесс поиска продалжается
             // Получаем ссылки на соседей или null, если ссылки нет (такое бывае, если узел рядом с краем графа или рядом с фигурой)
@@ -381,73 +451,59 @@ export default class Graph {
                 left: node.left,
                 right: node.right,
             };
-    
-            //  Проходимся по всем направлениям и всем соседям
+
+             //  Проходимся по всем направлениям и по всем соседям
             for (const [dir, neighbor] of Object.entries(neighbors)) {
-                // Если ссылка на соседа существует
+                // Если сосед ненулевой
                 if (neighbor) {
-                    // То получаем адресс соседа
-                    const neighborKey = getKey(neighbor);
+                    // Получаем ссылку на соседа
+                    const neighborAddress = getByStringAddress(neighbor);
     
-                    // Далее ряд очень важных условий:
-                    // 1. пропускаем уже посещённые узлы
-                    if (visited.has(neighborKey)) continue;
+                    // обновляем счётчик посещений узла
+                    visitedCount[neighborAddress] = (visitedCount[neighborAddress] || 0) + 1;
+
+                    // пропускаем код ниже, если количество посещений узла превышено
+                    if (visitedCount[neighborAddress] > maxVisits) continue;
     
-                    // 2. пропускаем узел, если он в направлении, из которого пришли (запрет движения на 180 градусов)
+                    // пропуск кода ниже, если движение совершается в обратную сторону
                     if (direction !== null && dir === oppositeDirection[direction]) continue;
     
-                    // Вычисляем новую длину пути как сумму уже пройденного пути и расстояния до соседа
+                    // Обновляем метрики маршрута
                     const newDistance = distance + Math.abs(neighbor.x - node.x) + Math.abs(neighbor.y - node.y);
-    
-                    // Вычисляем количество поворотов
                     const newTurns = direction === null || direction === dir ? turns : turns + 1;
+                    const newMidlineNodesCount = current.node.isMidlineNode ? midlineNodesCount + 1 : midlineNodesCount;
     
                     // Добавляем соседа в очередь на провероку
                     // Это не гарантирует что он будет именно следующей точкой
-                    // Всё зависит от значения пройдённого им пути и количества поворотов
+                    // Всё зависит от стоимости маршрута, от этого значения отталкивается сортировка и завасит то
+                    // Каким по счёту будет маршрут в очереди
                     queue.push({
                         node: neighbor,
                         path: [...path, neighbor],
                         distance: newDistance,
                         turns: newTurns,
                         direction: dir,
+                        midlineNodesCount: newMidlineNodesCount,
+
+                        // Самый важный этап - тип подсчёта стоимости
+                        // Нам нужно сделать так, чтобы оптимальные пути стоили дёшево
+                        // Данный метод учитывает различные параметры текущего состояния,
+                        // в зависимости от типа эвристики рассчитывает приблизительную стоимость пути
+                        cost: this.recalcPathCostByHeuristic(pathFindingMethod, startNode, endNode, {
+                            currentNode: node,
+                            neighborNode: neighbor,
+                            newDistance,
+                            newTurns,
+                            newMidlineNodesCount,
+                        }),
                     });
-    
-                    // Отмечаем узел как посещённый, чтобы не пришлось его проверять второй раз
-                    visited.add(neighborKey);
                 }
             }
         }
     
-        // Если путь не найден
         console.error("Путь не найден.");
         return [];
     }
-
-
-
-    /**
-     * Строит прямой путь между 2 точками.
-     * @param start - Точка старта
-     * @param end - Точка финиша.
-     * @returns - Массив с узлами, через которых проходит путь, а если путь не найден - пустой массив.
-     * @returns 
-     */
-    findStraightPathBetween(start: Point, end: Point): GraphNodeType[] {
-        // Находим стартовый и финишный узел
-        const startNode = this.nodes[`${start.x},${start.y}`];
-        const endNode =  this.nodes[`${end.x},${end.y}`];
-
-        return [startNode, endNode];
-    }
-
-
-
-    // временная заглушка
-    findOrthogonalPathBetween(start: Point, end: Point): GraphNodeType[] {
-        return [];
-    }
-
 
 
     /**
