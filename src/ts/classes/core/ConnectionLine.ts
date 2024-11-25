@@ -32,21 +32,22 @@ export default class ConnectionLine {
         const port1 = this.endPoints[0].connectionPoint.point;
         const port2 = this.endPoints[1].connectionPoint.point;
 
-        let points: Point[] = [];
+        // Определяем доступные имена методов
+        let methodName: 'straight' | 'shortest' | 'orthogonal' = 'straight';
 
         // На основе метода указанного в конструкторе класса будут заполнены точки пути
         if(this.method === 'shortest path') {
             // Точки самого короткого пути (и с самым наименьшим количеством поворотов)
-            points = this.graph.findShortestPathBetween(port1, port2)
+            methodName = 'shortest';
         } else if(this.method === 'straight line') {
             // Просто прямая линия
-            points = this.graph.findStraightPathBetween(port1, port2);
+            methodName = 'straight';
         } else if(this.method === 'orthogonal (elbow)') {
-            points = this.graph.findOrthogonalPathBetween(port1, port2);
+            methodName = 'orthogonal';
         }
 
         // записываем точки пути
-        this.points = points;
+        this.points =  this.graph.findPathBetween(port1, port2, methodName);
 
         this.color = color;
     }
