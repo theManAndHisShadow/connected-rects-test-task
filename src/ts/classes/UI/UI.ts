@@ -71,7 +71,7 @@ export default class UI {
             });
 
             // hotfix
-            mouseTarget.body.style.width = '100%';
+            mouseTarget.body.style.width = '93%';
 
             // записываем их в экземляр класса
             this.elements = {
