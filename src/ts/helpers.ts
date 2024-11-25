@@ -271,3 +271,14 @@ export function drawCircle(context: CanvasRenderingContext2D, cx: number, cy: nu
     context.stroke();
     context.closePath();
 }
+
+
+
+/**
+ * Вызвращает строку с адресом узла
+ * @param node 
+ * @returns 
+ */
+export function getByStringAddress (node: GraphNodeType) {
+    return `${node.x},${node.y}`
+};
