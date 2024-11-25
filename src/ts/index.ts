@@ -54,7 +54,7 @@ canvas.foreground.appendChild(rect1);
 canvas.foreground.appendChild(rect2);
 
 // testing main feature
-rect1.ports.getPort('C').connectTo(rect2.ports.getPort('B'));
+rect1.ports.getPort('C').connectTo(rect2.ports.getPort('A'));
 
 // rendering background and grid once for better performance
 canvas.background.fill(getColor('carbon'));
