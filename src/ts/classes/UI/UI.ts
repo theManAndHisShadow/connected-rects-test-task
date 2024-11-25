@@ -50,7 +50,7 @@ export default class UI {
                   label: 'Connection method',
                   classNames: ['app-ui__dropdown-list'],
                   valuesList: ['shortest path', 'straight line', 'orthogonal (elbow)'],
-                  value: 'shortest path',
+                  value: 'orthogonal (elbow)',
                   settingsKey: 'connectionMethod',
             });
 
