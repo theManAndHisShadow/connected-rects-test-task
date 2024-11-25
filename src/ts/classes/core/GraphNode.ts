@@ -7,6 +7,7 @@ export default class GraphNode implements GraphNodeType {
     right: GraphNode | null;
     up:    GraphNode | null;
     down:  GraphNode | null;
+    isMidlineNode: boolean;
 
     /**
      * Базовая еденица всего графа - узел.
@@ -18,7 +19,7 @@ export default class GraphNode implements GraphNodeType {
      * @param param.r - радиус узла
      * @param param.color - цвет узла
      */
-    constructor(x: number, y: number, r: number, color: string){
+    constructor(x: number, y: number, r: number, color: string, isMidlineNode: boolean){
         this.x = x;
         this.y = y;
         this.r = r;
@@ -28,6 +29,8 @@ export default class GraphNode implements GraphNodeType {
         this.down = null;
         this.left = null;
         this.right = null;
+
+        this.isMidlineNode = isMidlineNode;
     }
 
     /**
