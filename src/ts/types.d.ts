@@ -42,6 +42,7 @@ type GraphNodeType = {
     right: GraphNodeType | null;
     up: GraphNodeType | null;
     down: GraphNodeType | null;
+    isMidlineNode: boolean;
 };
 
 type GraphNodesMap = { 

@@ -29,8 +29,6 @@ export default class UIElement extends SynteticEventTarget{
           this.valuesList = params.valuesList ?? null;
           this.value = params.value ?? null;
           this.body = this.create();
-
-          console.log(params);
     }
 
       private create(): HTMLElement {
@@ -74,8 +72,6 @@ export default class UIElement extends SynteticEventTarget{
                               valueContainer = document.createElement('input');
                               valueContainer.setAttribute('type', 'checkbox');
 
-                              console.log(this.value);
-
                               // устанавливаем чекбокс в стостояние согласно состоянию в свойстве экземпляра
                               (valueContainer as HTMLInputElement).checked = Boolean(this.value);
                         } else if (this.type === 'dropdown-list' && (this.valuesList !== null && Array.isArray(this.valuesList))) {
@@ -103,6 +99,8 @@ export default class UIElement extends SynteticEventTarget{
                                     if (this.type == 'dropdown-list') this.value = (valueContainer as HTMLSelectElement).value;
 
                                     localStorage.setItem(this.settingsKey, JSON.stringify(this.value));
+
+                                    this.dispatchEvent('change', {});
                               });
                         }
                   }

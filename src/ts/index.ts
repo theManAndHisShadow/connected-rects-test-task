@@ -82,6 +82,20 @@ const convertObjectToHTML = (objectToRender: object) => {
 
 drawFrame();
 
+// Обновляем соединение, когда был выбран новый метод поиска пути
+ui.elements.connectionMethod.addEventListener('change', () => {
+    if(canvas.foreground.children.length > 0) {
+        // выбираем какую-нибудь фигуру c соединением
+        let rectWithConnection = canvas.foreground.children.find(someRect => someRect.hasConnection() === true);
+
+        // выбираем активный порт
+        let someActivePort = rectWithConnection.ports.getAll().find(somePort => somePort.isBusy === true);
+
+        // Обновляем соединение
+        someActivePort.reconnect();
+    }
+});
+
 
 canvas.foreground.children.forEach(shape => {
     shape.addEventListener('mouseover', event => {

@@ -45,6 +45,15 @@ export default class UI {
                   settingsKey: 'lineStyle',
             });
 
+            const connectionMethod = new UIElement({
+                  type: 'dropdown-list',
+                  label: 'Connection method',
+                  classNames: ['app-ui__dropdown-list'],
+                  valuesList: ['shortest path', 'straight line', 'orthogonal (elbow)'],
+                  value: 'shortest path',
+                  settingsKey: 'connectionMethod',
+            });
+
             const renderLinePointer = new UIElement({
                   type: 'checkbox',
                   label: 'Render pointer',
@@ -69,6 +78,7 @@ export default class UI {
                   renderGrid,
                   renderLinePointer,
                   lineStyle,
+                  connectionMethod,
                   mouseTarget,
             };
 
@@ -81,6 +91,7 @@ export default class UI {
             containerInner.appendChild(this.elements.renderGrid.body);
             containerInner.appendChild(this.elements.renderLinePointer.body)
             containerInner.appendChild(this.elements.lineStyle.body);
+            containerInner.appendChild(this.elements.connectionMethod.body);
             containerInner.appendChild(this.elements.mouseTarget.body);
 
             // добавляем внутренности в контейнер UI
