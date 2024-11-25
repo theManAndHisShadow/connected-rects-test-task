@@ -7,6 +7,25 @@ body {
     background-color: #111111;
 }
 
+#app-nav-panel {
+    font-family: monospace;
+    color: white;
+    background: black;
+    padding: 10px;
+    width: fit-content;
+    margin: 10px;
+    position: fixed;
+    border-radius: 4px;
+    border: 1px solid #222222;
+    box-shadow: 0px 1px 20px 1px #0000007d;
+}
+
+.app-nav-panel__logo {
+    border-right: 1px solid #222222;
+    padding-right: 10px;
+    margin-right: 10px;
+}
+
 #app-root {
     display: flex;
     justify-content: center; 
